@@ -9,17 +9,32 @@ use Illuminate\Support\Facades\Auth;
 
 class BorrowingController extends Controller
 {
-    public function index()
+    public function active()
     {
 
         $borrowed = borrowings::with('book')
             ->where('borrower_id',auth()->id())
+            ->whereIn('status',['requested', 'approved', 'borrowed'])
             ->latest()
             ->get();
 
         return view('user.myBorrowed',compact('borrowed'));
-
     }
+    
+    public function history()
+    {
+        
+         $history = borrowings::with('book')
+            ->where('borrower_id', auth()->id())
+            ->where('status', 'returned')
+            ->latest()
+            ->get();
+         return view('user.historyBorrowed',compact('history'));
+    }
+
+
+        
+
     public function show($id)
     {
 

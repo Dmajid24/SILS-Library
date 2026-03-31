@@ -9,9 +9,8 @@
 <div class="relative bg-gradient-to-r from-slate-700 via-indigo-700 to-indigo-600 rounded-3xl p-8 text-white mb-10 shadow-xl overflow-hidden">
 
     <!-- decorative blur -->
-    <div class="absolute -right-20 -top-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-    <div class="absolute -left-10 bottom-0 w-52 h-52 bg-indigo-300/10 rounded-full blur-2xl"></div>
-
+    <div class="absolute -right-20 -top-20 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-10 bottom-0 w-52 h-52 bg-indigo-300/10 rounded-full blur-2xl pointer-events-none"></div>
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
 
         <div>
@@ -26,7 +25,7 @@
 
         <!-- ADD SCHOOL BUTTON -->
         <a href="{{ route('superAdmin.schools.create') }}"
-           class="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl shadow hover:bg-gray-100 transition whitespace-nowrap">
+           class="relative z-10 bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl shadow hover:bg-gray-100 transition whitespace-nowrap">
             ➕ Add New School
         </a>
 
@@ -91,9 +90,9 @@
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
 @forelse($schools as $school)
+<a href="{{ route('superAdmin.schools.show',$school->id) }}">
 
 <div class="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition hover:-translate-y-1 border border-gray-100">
-
     <div class="flex items-center gap-4">
 
         <!-- LOGO -->
@@ -111,7 +110,7 @@
                 {{ $school->email ?? 'No Email' }}
             </p>
         </div>
-
+            
     </div>
 
     <p class="text-sm text-gray-400 mt-4">
@@ -120,14 +119,14 @@
 
     <!-- ACTION -->
     <div class="flex justify-end mt-5">
-        <a href="{{ route('superAdmin.schools.show',$school->id) }}"
-           class="text-indigo-600 text-sm font-semibold hover:underline">
+        
+        <p class="text-indigo-600 text-sm font-semibold hover:underline">
             Manage →
-        </a>
+        </p>
     </div>
 
 </div>
-
+ </a>
 @empty
 
 <div class="col-span-full text-center text-gray-400 py-10">

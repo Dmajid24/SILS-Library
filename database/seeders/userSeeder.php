@@ -15,6 +15,16 @@ class UserSeeder extends Seeder
         $school = school::all();
         
         User::create([
+            'school_id'=> null,
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'role' => 'super_admin',
+            'email' => 'superadmin@mail.com',
+            'phone' => '0811111111',
+            'password' => Hash::make('password'),
+        ]);
+
+        User::create([
             'school_id'=> $school[0]->id,
             'first_name' => 'Admin',
             'last_name' => 'Library',

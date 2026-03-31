@@ -10,23 +10,7 @@
     @vite(['resources/css/app.css','resources/js/app.js'])
 
 </head>
- @if(session('success'))
 
-        <div id="toastSuccess"
-        class="fixed bottom-6 right-6 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fade">
-
-        <span>✅</span>
-        <span>{{ session('success') }}</span>
-
-        </div>
-
-        <script>
-        setTimeout(()=>{
-            document.getElementById('toastSuccess').style.opacity = "0";
-        },3000)
-        </script>
-
-    @endif
 <body class="bg-gray-50 min-h-screen text-gray-800">
 
 {{-- ================= HEADER ================= --}}
@@ -56,7 +40,7 @@
             Dashboard
         </a>
 
-        @if (Auth::user()->role !== 'admin')
+        @if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'super_admin')
         <a href="{{ route('borrowed.index') }}"
            class="text-gray-600 hover:text-indgo-600 transition">
             My Borrowed
@@ -138,7 +122,72 @@ No
 {{-- ================= MAIN CONTENT ================= --}}
 
 <main class="max-w-7xl mx-auto px-6 py-8 space-y-6">
-   
+   @if(session('success'))
+
+<div id="successBanner"
+class="max-w-7xl mx-auto px-6 mt-6">
+
+    <div class="bg-green-500 border border-green-600
+                text-green-800 rounded-2xl
+                px-6 py-4 shadow-sm
+                flex items-center justify-between
+                opacity-0 -translate-y-4
+                transition-all duration-500">
+
+        <div class="flex items-center gap-4">
+
+            {{-- ICON --}}
+            <div class="w-10 h-10 rounded-full
+                        bg-green-100 flex items-center
+                        justify-center text-lg">
+                ✅
+            </div>
+
+            {{-- MESSAGE --}}
+            <div>
+                <p class="font-semibold">
+                    Success
+                </p>
+                <p class="text-sm">
+                    {{ session('success') }}
+                </p>
+            </div>
+
+        </div>
+
+        {{-- CLOSE BUTTON --}}
+        <button onclick="closeBanner()"
+            class="text-green-600 hover:text-green-800 text-xl">
+            ✕
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const banner = document.querySelector('#successBanner > div');
+
+// show animation
+setTimeout(()=>{
+    banner.classList.remove('opacity-0','-translate-y-4');
+},100);
+
+// auto hide
+setTimeout(closeBanner,5000);
+
+function closeBanner(){
+    banner.classList.add('opacity-0','-translate-y-4');
+
+    setTimeout(()=>{
+        document.getElementById('successBanner').remove();
+    },400);
+}
+
+</script>
+
+@endif
     @yield('content')
 
 </main>

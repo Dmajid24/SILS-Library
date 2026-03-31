@@ -4,17 +4,8 @@
 
 <div class="max-w-6xl mx-auto space-y-8">
 
-@if(session('success'))
-<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl">
-    {{ session('success') }}
-</div>
-@endif
 
-@if(session('error'))
-<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
-    {{ session('error') }}
-</div>
-@endif
+
 {{-- BACK BUTTON --}}
 <a href="{{ route('dashboard') }}" 
 class="text-indigo-600 hover:underline font-medium">
@@ -22,16 +13,14 @@ class="text-indigo-600 hover:underline font-medium">
 </a>
 
 
-{{-- BOOK HEADER --}}
+{{-- ================= BOOK HEADER ================= --}}
 <div class="bg-gradient-to-r from-slate-800 via-indigo-800 to-slate-700 
 rounded-3xl shadow-xl p-8 flex items-center gap-8">
 
-{{-- COVER --}}
 <img 
 src="{{ $book->cover ? asset('storage/'.$book->cover) : 'https://placehold.co/120x160' }}"
 class="w-28 h-40 object-cover rounded-xl shadow-lg">
 
-{{-- BOOK INFO --}}
 <div class="text-white flex-1">
 
 <h1 class="text-3xl font-bold mb-2">
@@ -57,27 +46,21 @@ by {{ $book->author }}
 </span>
 
 @if($book->stock > 0)
-
 <span class="bg-green-500 px-4 py-2 rounded-full font-semibold">
 ✔ {{ $book->stock }} Available
 </span>
-
 @else
-
 <span class="bg-red-500 px-4 py-2 rounded-full font-semibold">
 Out of Stock
 </span>
-
 @endif
 
 </div>
-
+</div>
 </div>
 
-</div>
 
-
-{{-- DESCRIPTION --}}
+{{-- ================= DESCRIPTION ================= --}}
 <div class="bg-white rounded-3xl shadow-lg p-8 border border-gray-100">
 
 <h2 class="text-xl font-semibold mb-4 text-gray-800">
@@ -91,7 +74,7 @@ Book Description
 </div>
 
 
-{{-- BORROW --}}
+{{-- ================= BORROW SECTION ================= --}}
 <div class="bg-white rounded-3xl shadow-lg p-8 flex justify-between items-center border border-gray-100">
 
 <div>
@@ -104,12 +87,14 @@ Request borrowing if the book is available
 </p>
 </div>
 
+
 @if($book->stock > 0)
 
-<form id="borrowForm" action="{{ route('request.borrow',$book->id) }}" method="POST">
+<form id="borrowRequestForm" action="{{ route('request.borrow',$book->id) }}" method="POST">
 @csrf
 
-<button type="button" onclick="openModal()" 
+<button type="button"
+onclick="borrowModal.open()"
 class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md transition">
 📚 Request Borrow
 </button>
@@ -127,9 +112,11 @@ Not Available
 </div>
 
 </div>
-{{-- CONFIRM MODAL --}}
-<div id="confirmModal" 
-class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+
+
+{{-- ================= BORROW MODAL ================= --}}
+<div id="borrow-modal"
+class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[999]">
 
 <div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
 
@@ -143,12 +130,12 @@ Are you sure you want to borrow this book?
 
 <div class="flex justify-center gap-4">
 
-<button onclick="submitBorrow()" 
+<button onclick="borrowModal.submit()" 
 class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg">
 Yes
 </button>
 
-<button onclick="closeModal()" 
+<button onclick="borrowModal.close()" 
 class="bg-gray-300 hover:bg-gray-400 px-5 py-2 rounded-lg">
 No
 </button>
@@ -158,20 +145,37 @@ No
 </div>
 </div>
 
+
+{{-- ================= SAFE JS (ANTI-CONFLICT) ================= --}}
 <script>
 
-function openModal(){
-    document.getElementById('confirmModal').classList.remove('hidden');
-    document.getElementById('confirmModal').classList.add('flex');
-}
+const borrowModal = {
 
-function closeModal(){
-    document.getElementById('confirmModal').classList.add('hidden');
-}
+    modal: document.getElementById('borrow-modal'),
 
-function submitBorrow(){
-    document.getElementById('borrowForm').submit();
-}
+    open(){
+        this.modal.classList.remove('hidden');
+        this.modal.classList.add('flex');
+    },
+
+    close(){
+        this.modal.classList.add('hidden');
+        this.modal.classList.remove('flex');
+    },
+
+    submit(){
+        document.getElementById('borrowRequestForm').submit();
+    }
+};
+
+
+// close when click background
+borrowModal.modal.addEventListener('click', function(e){
+    if(e.target === this){
+        borrowModal.close();
+    }
+});
 
 </script>
+
 @endsection

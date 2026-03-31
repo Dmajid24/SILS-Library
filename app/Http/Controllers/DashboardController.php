@@ -7,6 +7,8 @@ use App\Models\book;
 use App\Models\User;
 use App\Models\information;
 use App\Models\borrowings;
+use App\Models\School;
+
 use Illuminate\Support\Facades\Auth;
 
 
@@ -57,6 +59,23 @@ class DashboardController extends Controller
                 'monthlyBorrow',
                 'borrowings'
             ));
+        }
+
+        elseif($user->role=== 'super_admin'){
+            if (auth()->user()->role !== 'super_admin') {
+                abort(403);
+            }
+
+        
+            $totalSchools = School::count();
+            $totalUsers = User::count();
+            $totalBooks = Book::count();
+            $schools = School::latest()->get();
+            // 'totalBorrowings' => Borrowing::count(),
+            // 'activeBorrowings' => Borrowing::where('status', 'borrowed')->count(),
+        
+
+            return view('superAdmin.dashboard',compact('totalSchools','totalUsers','totalBooks','schools'));
         }
 
         
