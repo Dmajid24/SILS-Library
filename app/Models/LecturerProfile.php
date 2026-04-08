@@ -12,6 +12,7 @@ class LecturerProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'school_id',
         'nip',
         'degree',
         'department'

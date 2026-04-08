@@ -2,139 +2,134 @@
 
 @section('content')
 
-<!-- ========================= -->
-<!-- WELCOME SUPER ADMIN CARD -->
-<!-- ========================= -->
+<!-- WELCOME CARD -->
 
-<div class="relative bg-gradient-to-r from-slate-700 via-indigo-700 to-indigo-600 rounded-3xl p-8 text-white mb-10 shadow-xl overflow-hidden">
+<div class="bg-gradient-to-r from-slate-800 via-indigo-800 to-slate-700 rounded-3xl p-8 text-white mb-10 shadow-lg">
 
-    <!-- decorative blur -->
-    <div class="absolute -right-20 -top-20 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
-    <div class="absolute -left-10 bottom-0 w-52 h-52 bg-indigo-300/10 rounded-full blur-2xl"></div>
+    @if(Auth::user()->role == 'lecturer')
 
-    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+        <h1 class="text-3xl font-bold mb-2">
+            Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}, {{ Auth::user()->lectureProfile->degree }}
+        </h1>
 
-        <div>
-            <h1 class="text-3xl font-semibold mb-2 tracking-wide">
-                👑 Welcome Super Admin
-            </h1>
+    @else
 
-            <p class="text-indigo-100 max-w-lg">
-                Manage all schools and control the entire library ecosystem from one dashboard.
-            </p>
-        </div>
+        <h1 class="text-3xl font-bold mb-2">
+            Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+        </h1>
 
-        <!-- ADD SCHOOL BUTTON -->
-        <a href="{{ route('superAdmin.schools.create') }}"
-           class="bg-white text-indigo-600 font-semibold px-6 py-3 rounded-xl shadow hover:bg-gray-100 transition whitespace-nowrap">
-            ➕ Add New School
-        </a>
+    @endif
 
-    </div>
+    <p class="text-gray-200 mb-6">
+        Find and borrow books from your school library
+    </p>
 
-</div>
-
-
-
-<!-- ========================= -->
-<!-- STATISTICS -->
-<!-- ========================= -->
-
-<div class="grid md:grid-cols-3 gap-6 mb-12">
-
-    <!-- TOTAL SCHOOL -->
-    <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-        <p class="text-gray-500 text-sm">Total Schools</p>
-        <h2 class="text-3xl font-bold text-indigo-600 mt-2">
-            {{ $totalSchools }}
-        </h2>
-    </div>
-
-    <!-- TOTAL USERS -->
-    <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-        <p class="text-gray-500 text-sm">Total Users</p>
-        <h2 class="text-3xl font-bold text-green-600 mt-2">
-            {{ $totalUsers }}
-        </h2>
-    </div>
-
-    <!-- TOTAL BOOKS -->
-    <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-        <p class="text-gray-500 text-sm">Total Books</p>
-        <h2 class="text-3xl font-bold text-purple-600 mt-2">
-            {{ $totalBooks }}
-        </h2>
-    </div>
+    <form method="GET">
+        <input
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Search books or authors..."
+            class="w-full md:w-96 px-5 py-3 rounded-xl text-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+        />
+    </form>
 
 </div>
 
 
-
-<!-- ========================= -->
-<!-- SCHOOL HEADER -->
-<!-- ========================= -->
+<!-- ANNOUNCEMENT HEADER -->
 
 <div class="flex justify-between items-center mb-6">
 
     <h2 class="text-xl font-semibold text-gray-800">
-        🏫 Registered Schools
+        📢 Library Events
     </h2>
 
-</div>
-
-
-
-<!-- ========================= -->
-<!-- SCHOOL LIST -->
-<!-- ========================= -->
-
-<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-@forelse($schools as $school)
-
-<div class="bg-white p-6 rounded-2xl shadow hover:shadow-xl transition hover:-translate-y-1 border border-gray-100">
-
-    <div class="flex items-center gap-4">
-
-        <!-- LOGO -->
-        <img
-            src="{{ $school->logo ? asset('storage/'.$school->logo) : 'https://placehold.co/80x80' }}"
-            class="w-16 h-16 rounded-xl object-cover border"
+    @if(auth()->user()->role === 'lecturer')
+        <a
+            href="{{ route('information.create') }}"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
         >
-
-        <div>
-            <h3 class="font-semibold text-gray-800 text-lg">
-                {{ $school->name }}
-            </h3>
-
-            <p class="text-sm text-gray-500">
-                {{ $school->email ?? 'No Email' }}
-            </p>
-        </div>
-
-    </div>
-
-    <p class="text-sm text-gray-400 mt-4">
-        {{ $school->address }}
-    </p>
-
-    <!-- ACTION -->
-    <div class="flex justify-end mt-5">
-        <a href="{{ route('superAdmin.schools.show',$school->id) }}"
-           class="text-indigo-600 text-sm font-semibold hover:underline">
-            Manage →
+            ➕ Create Announcement
         </a>
-    </div>
+    @endif
 
 </div>
 
-@empty
 
-<div class="col-span-full text-center text-gray-400 py-10">
-    No schools registered yet.
+<!-- ANNOUNCEMENT LIST -->
+
+<div class="grid md:grid-cols-3 gap-6 mb-12">
+
+@foreach($info as $i)
+
+<a href="{{ route('information.show',$i->id) }}">
+
+<div class="bg-white border border-gray-200 p-6 rounded-2xl shadow hover:shadow-lg transition hover:-translate-y-1">
+
+<h3 class="font-semibold text-lg mb-2 text-gray-800">
+{{ $i->title }}
+</h3>
+
+<p class="text-xs mt-3 text-indigo-600 font-medium">
+See Details →
+</p>
+
 </div>
 
-@endforelse
+</a>
+
+@endforeach
+
+</div>
+
+
+<!-- BOOK SECTION -->
+
+<h2 class="text-xl font-semibold mb-6 text-gray-800">
+Explore Books
+</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+@foreach($book as $b)
+
+<div class="bg-white rounded-3xl overflow-hidden shadow hover:shadow-xl transition transform hover:-translate-y-1">
+
+<img
+src="{{ $b->cover ? asset('storage/'.$b->cover) : 'https://placehold.co/300x400' }}"
+class="w-full h-56 object-cover">
+
+<div class="p-5">
+
+<h3 class="font-semibold text-gray-800 text-lg">
+{{ $b->title }}
+</h3>
+
+<p class="text-sm text-gray-500 mt-1">
+{{ $b->author }}
+</p>
+
+<div class="flex justify-between items-center mt-4">
+
+<span class="text-green-600 text-sm font-medium">
+{{ $b->stock }} available
+</span>
+
+<a
+href="{{ route('books.show',$b->id) }}"
+class="text-indigo-600 text-sm font-semibold hover:underline">
+
+Detail →
+
+</a>
+
+</div>
+
+</div>
+
+</div>  
+
+@endforeach
 
 </div>
 

@@ -15,6 +15,7 @@ class LecturerProfileSeeder extends Seeder
 
         LecturerProfile::create([
             'user_id' => $lecturer[0]->id,
+            'school_id'=> $lecturer[0]->school_id,
             'nip' => '1987654321',
             'degree' => 'Ph.D',
             'department' => 'Computer Science'
@@ -22,6 +23,7 @@ class LecturerProfileSeeder extends Seeder
 
         LecturerProfile::create([
             'user_id' => $lecturer[1]->id,
+            'school_id'=> $lecturer[1]->school_id,
             'nip' => '17853233521',
             'degree' => 'M.kom',
             'department' => 'System Information'

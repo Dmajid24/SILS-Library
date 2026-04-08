@@ -7,24 +7,40 @@
 {{-- HEADER --}}
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-<div>
-<h1 class="text-3xl font-bold text-slate-800">
-👥 Manage Users
-</h1>
+    {{-- LEFT --}}
+    <div>
+        <h1 class="text-3xl font-bold text-slate-800">
+            👥 Manage Users
+        </h1>
 
-<p class="text-gray-500">
-Manage and control system users
-</p>
-</div>
+        <p class="text-gray-500">
+            Manage and control system users
+        </p>
+    </div>
 
-<form method="GET">
-<input
-name="search"
-value="{{ request('search') }}"
-placeholder="Search users..."
-class="border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
->
-</form>
+    {{-- RIGHT ACTION AREA --}}
+    <div class="flex items-center gap-3">
+
+        {{-- SEARCH --}}
+        <form method="GET">
+            <input
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search users..."
+                class="border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+            >
+        </form>
+
+        {{-- ADD USER BUTTON --}}
+        <a href="{{ route('admin.users.create') }}"
+           class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow-sm
+                  hover:bg-indigo-700 transition flex items-center gap-2">
+
+            <span class="text-lg">＋</span>
+            Add User
+        </a>
+
+    </div>
 
 </div>
 
@@ -110,7 +126,8 @@ class="px-3 py-2 bg-yellow-300 rounded-lg border border-gray-300 hover:bg-yellow
 </a>
 
 <button
-onclick="openDeleteModal('{{ $user->id }}')"
+type="button"
+onclick="openDeleteModal('{{ route('admin.users.destroy',$user->id) }}')"
 class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white">
 🗑
 </button>
@@ -162,15 +179,14 @@ Are you sure you want to delete this user?
 This action cannot be undone.
 </p>
 
-<form id="deleteForm"
-      method="POST"
-      data-action="{{ route('admin.users.destroy', ':id') }}">
-@csrf
-@method('DELETE')
-<button
-class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg">
-Yes, Delete
-</button>
+<form id="deleteForm" method="POST">
+    @csrf
+    @method('DELETE')
+
+    <button type="submit"
+        class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg">
+        Yes, Delete
+    </button>
 </form>
 
 <button
@@ -186,19 +202,20 @@ Cancel
 
 {{-- ================= SCRIPT ================= --}}
 <script>
-function openDeleteModal(userId){
+function openDeleteModal(actionUrl){
 
-    let form = document.getElementById('deleteForm');
-    let url = form.getAttribute('data-action');
+    const modal = document.getElementById('deleteModal');
+    const form  = document.getElementById('deleteForm');
 
-    form.action = url.replace(':id', userId);
+    form.setAttribute('action', actionUrl);
 
-    document.getElementById('deleteModal').classList.remove('hidden');
-    document.getElementById('deleteModal').classList.add('flex');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
 }
 
 function closeDeleteModal(){
-    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteModal')
+        .classList.add('hidden');
 }
 </script>
 @endsection

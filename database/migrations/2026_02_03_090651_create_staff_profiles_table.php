@@ -12,16 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('staff_profiles', function (Blueprint $table) {
-             $table->foreignUuid('user_id')
+            $table->foreignUuid('user_id')
                 ->primary()
                 ->constrained()
                 ->cascadeOnDelete();
-
+            $table->foreignUuid('school_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('employee_id')->unique();
             $table->string('job_position');
             $table->string('department');
-
-    $table->timestamps();
+            $table->unique(['school_id','employee_id']);
+            $table->timestamps();
         });
     }
 

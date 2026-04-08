@@ -16,9 +16,13 @@ return new class extends Migration
                 ->primary()
                 ->constrained()
                 ->cascadeOnDelete();
+            $table->foreignUuid('school_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('nim')->unique();
             $table->string('major');
             $table->string('faculty');
+            $table->unique(['school_id','nim']);
             $table->timestamps();
         });
     }

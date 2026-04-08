@@ -39,7 +39,8 @@ Login
 
 <h2 class="text-5xl font-bold mb-6 leading-tight text-gray-900">
 
-Smart <br>
+Smart  <br>
+Integrated <br>
 Library System
 
 </h2>

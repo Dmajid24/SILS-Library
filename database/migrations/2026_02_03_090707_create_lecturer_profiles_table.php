@@ -16,10 +16,13 @@ return new class extends Migration
                 ->primary()
                 ->constrained()
                 ->cascadeOnDelete();
-
+            $table->foreignUuid('school_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('nip')->unique();
             $table->string('degree')->nullable();
             $table->string('department');
+            $table->unique(['school_id','nip']);
             $table->timestamps();
         });
     }

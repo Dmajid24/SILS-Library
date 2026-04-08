@@ -47,7 +47,7 @@ class BookController extends Controller
         }
         Book::create($data);
 
-        return redirect()->route('book.index')->with('success','Book added');
+        return redirect()->route('books.index')->with('success','Book added');
     }
     public function show(book $book){
 
@@ -87,7 +87,7 @@ class BookController extends Controller
 
         $book->update($data);
 
-        return redirect()->route('book.index')->with('success','Updated');
+        return redirect()->route('books.index')->with('success','Updated');
     }
 
     // DELETE

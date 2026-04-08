@@ -78,13 +78,19 @@ Route::middleware(['auth'])
         Route::get('/users', [AdminController::class,'indexUser'])
             ->name('users.index');
 
+        Route::get('/users/create', [AdminController::class,'createUser'])
+            ->name('users.create');
+
+        Route::post('/users/store',[AdminController::class, 'storeUser'])
+            ->name('users.store');
+
         Route::get('/users/{user}/edit', [AdminController::class,'editUser'])
             ->name('users.edit');
 
         Route::put('/users/{user}', [AdminController::class,'update'])
             ->name('users.update');
 
-        Route::delete('/users/{user}', [AdminController::class,'destroy'])
+        Route::delete('/users/{user}', [AdminController::class,'destroyUser'])
             ->name('users.destroy');
 
         // Borrowings Admin View

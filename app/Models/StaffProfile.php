@@ -12,6 +12,7 @@ class StaffProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'school_id',
         'employee_id',
         'job_position',
         'department'
