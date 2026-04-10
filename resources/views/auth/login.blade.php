@@ -2,51 +2,111 @@
 <html>
 <head>
 
-<title>Login - SILS</title>
+<title>Login - {{ $school->name ?? 'Library System' }}</title>
 
 @vite(['resources/css/app.css','resources/js/app.js'])
 
 </head>
 
-<body class="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-800 min-h-screen flex items-center justify-center">
+<body class="min-h-screen flex items-center justify-center px-4 
+             bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 overflow-hidden">
 
-<div class="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-10 w-full max-w-md">
+{{-- BACKGROUND DECOR --}}
+<div class="absolute inset-0 -z-10">
 
-<h2 class="text-3xl font-bold text-center mb-2 text-gray-800">
-📚 SILS
-</h2>
+    <div class="absolute top-0 left-0 w-72 h-72 bg-indigo-300 rounded-full blur-3xl opacity-30"></div>
+    <div class="absolute bottom-0 right-0 w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-30"></div>
 
-<p class="text-gray-500 text-center mb-8">
-Login to your library account
-</p>
+</div>
 
 
-<form method="POST" action="{{ route('login') }}">
+<div class="w-full max-w-md">
 
-@csrf
+    {{-- ================= LOGO ================= --}}
+    <div class="text-center mb-8">
 
-<input
-type="email"
-name="email"
-placeholder="Email"
-class="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-/>
+        @if($school && $school->logo)
+        <div class="bg-white p-3 rounded-2xl shadow inline-block mb-4">
+            <img src="{{ asset('storage/'.$school->logo) }}"
+                 class="w-16 h-16 object-contain">
+        </div>
+        @endif
 
-<input
-type="password"
-name="password"
-placeholder="Password"
-class="w-full border border-gray-300 rounded-xl px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-/>
+        <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            {{ $school->name ?? 'Library System' }}
+        </h1>
 
-<button
-class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold shadow-md transition">
+        <p class="text-gray-500 text-sm mt-1">
+            Smart Integrated Library System
+        </p>
 
-Login
+    </div>
 
-</button>
 
-</form>
+    {{-- ================= CARD ================= --}}
+    <div class="bg-white/70 backdrop-blur-xl border border-white/40
+                rounded-3xl shadow-2xl p-8 transition">
+
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">
+            Welcome Back 👋
+        </h2>
+
+        <p class="text-gray-500 text-center mb-6 text-sm">
+            Please login to continue
+        </p>
+
+
+        {{-- ERROR --}}
+        @if ($errors->any())
+        <div class="mb-4 bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm">
+            {{ $errors->first() }}
+        </div>
+        @endif
+
+
+        {{-- FORM --}}
+        <form method="POST" action="{{ route('login') }}">
+        @csrf
+
+        <input
+        type="email"
+        name="email"
+        value="{{ old('email') }}"
+        placeholder="Email"
+        class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-4
+               focus:outline-none focus:ring-2 focus:ring-indigo-400
+               bg-white/80 backdrop-blur transition"
+        required
+        />
+
+        <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        class="w-full border border-gray-200 rounded-xl px-4 py-3 mb-6
+               focus:outline-none focus:ring-2 focus:ring-purple-400
+               bg-white/80 backdrop-blur transition"
+        required
+        />
+
+        <button
+        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600
+               hover:scale-[1.02] text-white py-3 rounded-xl font-semibold
+               shadow-lg transition">
+
+        Login
+
+        </button>
+
+        </form>
+
+    </div>
+
+
+    {{-- FOOTER --}}
+    <p class="text-center text-gray-500 text-xs mt-6">
+        © {{ date('Y') }} {{ $school->name ?? 'School' }}
+    </p>
 
 </div>
 

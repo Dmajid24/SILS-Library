@@ -4,18 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\information;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class InformationController extends Controller
 {
    
-    public function index(){
-        $user=Auth::user();
-        $info = information::where('school_id',$user->school_id)->get();
+    public function index()
+{
+    $user = Auth::user();
 
-        return view('admin.information.index',compact('info'));
-    }
+    $yourInfo = Information::where('creator_id', $user->id)
+                    ->where('school_id', $user->school_id)
+                    ->latest()
+                    ->get();
+
+    $info = Information::where('school_id', $user->school_id)
+                ->where('creator_id', '!=', $user->id)
+                ->latest()
+                ->get();
+
+    return view('admin.information.index', compact('info','yourInfo'));
+}
     public function create(){
         if(Auth()->user()->role !== 'lecturer'&& Auth()->user()->role !== 'admin'){
             abort(403);
@@ -28,6 +39,7 @@ class InformationController extends Controller
         if(Auth()->user()->role !== 'lecturer' && Auth()->user()->role !== 'admin'){
             abort(403);
         }
+        $user = Auth::user();
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -43,29 +55,28 @@ class InformationController extends Controller
                 ->store('information','public');
         }
 
-        Information::   create([
-            'creator_id' => Auth::id(),
-            'school_id' => Auth::user()->school_id,
+        Information:: create([
+            'creator_id' => $user->id,
+            'school_id' => $user->school_id,
             'title' => $validated['title'],
             'description' => $validated['description'],
             'image_content' => $imagePath,
         ]);
 
-        if(Auth()->user()->role === 'lecturer'){
-             return redirect()->route('dashboard')
-            ->with('success','Information created successfully 🎉');
-        }else{
+        
              return redirect()->route('admin.information.index')
             ->with('success','Information created successfully 🎉');
-        }
+
        
     }
 
     public function edit($id)
     {
         $information = Information::findOrFail($id);
+        $user = Auth::user();
 
-         if((auth()->user()->role !== 'lecturer' && $information->creator_id !== auth()->id()  ) || auth()->user()->role !== 'admin'    ){
+
+        if(($user->role !== 'lecturer' && $information->creator_id !== $user->id  ) && $user->role !== 'admin'    ){
             abort(403);
         }
 
@@ -76,11 +87,6 @@ class InformationController extends Controller
     public function update(Request $request, $id)
     {
         $information = Information::findOrFail($id);
-
-         if((auth()->user()->role !== 'lecturer' && $information->creator_id !== auth()->id()  ) || auth()->user()->role !== 'admin'    ){
-            abort(403);
-        }
-
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -109,8 +115,8 @@ class InformationController extends Controller
     public function destroy($id)
     {
         $information = Information::findOrFail($id);
-
-        if((auth()->user()->role !== 'lecturer' && $information->creator_id !== auth()->id()  ) || auth()->user()->role !== 'admin'    ){
+        $user = Auth::user();
+        if(($user->role !== 'lecturer' && $information->creator_id !== $user->id  ) && $user->role !== 'admin'    ){
             abort(403);
         }
 
@@ -121,12 +127,9 @@ class InformationController extends Controller
 
         $information->delete();
 
-         if(Auth()->user()->role === 'lecturer'){
-             return redirect()->route('dashboard')
-            ->with('success','Information Deleted successfully 🎉');
-        }else{
+        
              return redirect()->route('admin.information.index')
             ->with('success','Information Deleted successfully 🎉');
-        }
+        
     }
 }

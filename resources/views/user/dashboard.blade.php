@@ -46,10 +46,10 @@
 
     @if(auth()->user()->role === 'lecturer')
         <a
-            href="{{ route('information.create') }}"
+            href="{{ route('admin.information.index') }}"
             class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
         >
-            ➕ Create Announcement
+            📢 Manage Announcement
         </a>
     @endif
 

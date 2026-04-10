@@ -21,12 +21,5 @@ class LecturerProfileSeeder extends Seeder
             'department' => 'Computer Science'
         ]);
 
-        LecturerProfile::create([
-            'user_id' => $lecturer[1]->id,
-            'school_id'=> $lecturer[1]->school_id,
-            'nip' => '17853233521',
-            'degree' => 'M.kom',
-            'department' => 'System Information'
-        ]);
     }
 }   

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BookController;
@@ -10,6 +9,10 @@ use App\Http\Controllers\InformationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SchoolController;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
+use App\Models\School;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +20,10 @@ use App\Http\Controllers\SchoolController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', fn () => view('welcome'));
-
+Route::get('/', function () {
+    $school = School::first();
+    return view('welcome', compact('school'));
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -46,18 +51,6 @@ Route::middleware('auth')->get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth'])
-    ->prefix('super-admin')
-    ->name('superAdmin.')
-    ->group(function () {
-
-        Route::get('/dashboard', [DashboardController::class,'index'])
-            ->name('dashboard');
-
-        // School Management
-        Route::resource('schools', SchoolController::class);
-
-});
 
 
 /*
@@ -87,7 +80,7 @@ Route::middleware(['auth'])
         Route::get('/users/{user}/edit', [AdminController::class,'editUser'])
             ->name('users.edit');
 
-        Route::put('/users/{user}', [AdminController::class,'update'])
+        Route::put('/users/{user}', [AdminController::class,'updateUser'])
             ->name('users.update');
 
         Route::delete('/users/{user}', [AdminController::class,'destroyUser'])
@@ -103,6 +96,12 @@ Route::middleware(['auth'])
 
         Route::get('/information/create', [AdminController::class,'createInfo'])
             ->name('information.create');
+
+         Route::get('/school', [SchoolController::class,'edit'])
+        ->name('school.edit');
+
+        Route::put('/school', [SchoolController::class,'update'])
+            ->name('school.update');
 
 });
 

@@ -20,12 +20,5 @@ class StudentProfileSeeder extends Seeder
             'major' => 'Computer Science',
             'faculty' => 'School of Computer Science'
         ]);
-        StudentProfile::create([
-            'user_id' => $student[1]->id,
-            'school_id'=> $student[1]->school_id,
-            'nim' => '2601234566',
-            'major' => 'Computer Science',
-            'faculty' => 'School of Computer Science'
-        ]);
     }
 }

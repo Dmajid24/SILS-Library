@@ -20,12 +20,6 @@ class StaffProfileSeeder extends Seeder
             'job_position' => 'Administration',
             'department' => 'Academic Office'
         ]);
-         StaffProfile::create([
-            'user_id' => $staff[1]->id,
-            'school_id'=> $staff[1]->school_id,
-            'employee_id' => 'EMP002',
-            'job_position' => 'Administration',
-            'department' => 'Academic Office'
-        ]);
+        
     }
 }

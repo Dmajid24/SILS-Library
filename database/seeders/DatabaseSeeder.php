@@ -21,9 +21,6 @@ class DatabaseSeeder extends Seeder
             StudentProfileSeeder::class,
             LecturerProfileSeeder::class,
             StaffProfileSeeder::class,
-            BookSeeder::class,
-            InformationSeeder::class,
-            BorrowingSeeder::class,
         ]);
     }
 }

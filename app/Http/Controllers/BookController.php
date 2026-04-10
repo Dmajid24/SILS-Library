@@ -97,7 +97,7 @@ class BookController extends Controller
 
         $book->delete();
 
-        return back()->with('success','Deleted');
+        return back()->with('success','Book Deleted');
     }
 
     private function authorizeBook(Book $book)
