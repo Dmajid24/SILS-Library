@@ -65,7 +65,7 @@
             <button onclick="toggleMenu()" class="flex items-center gap-2">
                 <div class="w-9 h-9 bg-gradient-to-r from-indigo-600 to-purple-600 
                             text-white rounded-full flex items-center justify-center font-semibold shadow">
-                    {{ strtoupper(substr(Auth::user()->first_name,0,1)) }}
+                    {{ strtoupper(substr(Auth::user()->first_name ?? Auth::user()->name,0,1)) }}
                 </div>
             </button>
 
@@ -77,13 +77,10 @@
                     Profile
                 </a>
                 
-                <form id="logoutForm" action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="button" onclick="openLogoutModal()" 
-                    class="w-full text-left px-4 py-2 text-sm hover:bg-red-50 rounded-b-xl">
-                        Logout
-                    </button>
-                </form>
+                <button type="button" onclick="openLogoutModal()" 
+                class="w-full text-left px-4 py-2 text-sm hover:bg-red-50 rounded-b-xl">
+                    Logout
+                </button>
 
             </div>
 
@@ -135,6 +132,29 @@ class="fixed top-5 right-5 z-[9999]
 </div>
 @endif
 
+{{-- VALIDATION ERROR --}}
+@if ($errors->any())
+<div id="validationBanner"
+class="fixed top-5 right-5 z-[9999] 
+       bg-red-500 text-white px-6 py-4 rounded-2xl shadow-lg
+       opacity-0 translate-y-[-20px] transition-all duration-500">
+
+    <div class="flex items-start gap-3">
+        <span>⚠️</span>
+        <div>
+            <p class="font-semibold">Validation Error</p>
+
+            <ul class="text-sm mt-1">
+                @foreach ($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                @endforeach
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+@endif
 @yield('content')
 
 </main>
@@ -165,6 +185,45 @@ class="fixed top-5 right-5 z-[9999]
 </footer>
 
 
+{{-- ================= LOGOUT FORM ================= --}}
+<form id="logoutForm" action="{{ route('logout') }}" method="POST" class="hidden">
+    @csrf
+</form>
+
+
+{{-- ================= LOGOUT MODAL ================= --}}
+<div id="logoutModal"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[9999]">
+
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">
+            Confirm Logout
+        </h2>
+
+        <p class="text-sm text-gray-500 mb-6">
+            Are you sure you want to logout?
+        </p>
+
+        <div class="flex justify-end gap-3">
+
+            <button onclick="closeLogoutModal()"
+            class="px-4 py-2 rounded-xl border text-gray-600 hover:bg-gray-100">
+                Cancel
+            </button>
+
+            <button onclick="submitLogout()"
+            class="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600">
+                Yes, Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 {{-- ================= SCRIPT ================= --}}
 <script>
 
@@ -172,7 +231,22 @@ function toggleMenu(){
     document.getElementById("profileMenu").classList.toggle("hidden");
 }
 
-// SHOW ALERT
+function openLogoutModal(){
+    document.getElementById('logoutModal').classList.remove('hidden');
+    document.getElementById('logoutModal').classList.add('flex');
+}
+
+function closeLogoutModal(){
+    document.getElementById('logoutModal').classList.add('hidden');
+    document.getElementById('logoutModal').classList.remove('flex');
+}
+
+function submitLogout(){
+    document.getElementById('logoutForm').submit();
+}
+
+
+// ALERT ANIMATION
 window.addEventListener('DOMContentLoaded', () => {
 
     const success = document.getElementById('successBanner');
@@ -201,10 +275,21 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+const validation = document.getElementById('validationBanner');
 
+if(validation){
+    setTimeout(()=>{
+        validation.classList.remove('opacity-0','translate-y-[-20px]');
+    },100);
+
+    setTimeout(()=>{
+        validation.style.opacity = '0';
+        setTimeout(()=> validation.remove(),500);
+    },3000);
+}   
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<script src="//unpkg.com/alpinejs" defer></script>
 </body>
 </html>

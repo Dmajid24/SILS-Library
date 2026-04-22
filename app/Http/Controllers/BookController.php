@@ -49,10 +49,12 @@ class BookController extends Controller
 
         return redirect()->route('books.index')->with('success','Book added');
     }
-    public function show(book $book){
+    public function show($id){
 
-        $this->authorizeBook($book);
-
+        $book = Book::where('id', $id)->with(['reviews' => function($q){
+            $q->latest()->take(5);
+        }, 'reviews.user'])
+        ->firstOrFail();
         return view('user.detail', compact('book'));
     }
 

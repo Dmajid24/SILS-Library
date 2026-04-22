@@ -5,8 +5,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\School;
 use App\Models\StudentProfile;
 use App\Models\LecturerProfile;
 use App\Models\StaffProfile;
@@ -237,6 +238,261 @@ class adminController extends Controller
                     abort(403);
         }
         return view('user.lecture.create');
+    }
+
+    
+    public function downloadTemplate($role)
+{
+    $filename = $role . '_template.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+    ];
+
+    $callback = function() use ($role){
+
+        $file = fopen('php://output', 'w');
+
+        if($role == 'student'){
+            fputcsv($file, ['nim','name','major','faculty']);
+            fputcsv($file, ['240001','Budi Santoso','RPL','Teknik Informatika']);
+        }
+
+        if($role == 'lecturer'){
+            fputcsv($file, ['nip','name','degree','department']);
+            fputcsv($file, ['1987001','Ahmad Fauzi','S.Kom','Computer Science']);
+        }
+
+        if($role == 'staff'){
+            fputcsv($file, ['employee_id','name','job_position','department']);
+            fputcsv($file, ['ST001','Andi Saputra','Librarian','Library']);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+public function importPreview(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:csv,txt',
+        'role' => 'required|in:student,lecturer,staff'
+    ]);
+
+    $role = $request->role;
+
+    $expectedHeaders = [
+        'student'  => ['nim','name','major','faculty'],
+        'lecturer' => ['nip','name','degree','department'],
+        'staff'    => ['employee_id','name','job_position','department'],
+    ];
+
+    $file = fopen($request->file('file'), 'r');
+
+    $headers = fgetcsv($file);
+
+    if (!$headers) {
+        return back()->withErrors([
+            'file' => 'CSV file is empty.'
+        ]);
+    }
+
+    $headers = array_map(fn($h) => strtolower(trim($h)), $headers);
+
+    if ($headers !== $expectedHeaders[$role]) {
+        return back()->withErrors([
+            'file' => 'CSV template does not match selected role.'
+        ]);
+    }
+
+    $rows = [];
+    $line = 2;
+
+    while (($row = fgetcsv($file, 1000, ",")) !== false) {
+
+        if(count($row) < 4){
+            $rows[] = [
+                'line' => $line,
+                'data' => $row,
+                'status' => 'Invalid Row',
+                'message' => 'Column count mismatch'
+            ];
+            $line++;
+            continue;
+        }
+
+        $idNumber = trim($row[0]);
+        $name     = trim($row[1]);
+        $field1   = trim($row[2]);
+        $field2   = trim($row[3]);
+
+        if(empty($idNumber) || empty($name)){
+            $rows[] = [
+                'line' => $line,
+                'data' => $row,
+                'status' => 'Invalid Row',
+                'message' => 'Required column empty'
+            ];
+            $line++;
+            continue;
+        }
+
+        $email = $idNumber . '@AL-IRSYAD.co.id';
+
+        $exists = User::where('email',$email)->exists();
+
+        $rows[] = [
+            'line' => $line,
+            'id_number' => $idNumber,
+            'name' => $name,
+            'field1' => $field1,
+            'field2' => $field2,
+            'role' => $role,
+            'data' => $row,
+            'status' => $exists ? 'Duplicate' : 'Ready',
+            'message' => $exists ? 'Already exists' : 'Ready to import'
+        ];
+
+        $line++;
+    }
+
+    fclose($file);
+
+    session([
+        'import_rows' => $rows,
+        'import_role' => $role
+    ]);
+
+    return view('admin.users.preview.preview', compact('rows','role'));
+}
+public function importConfirm()
+{
+    $rows = session('import_rows', []);
+    $role = session('import_role');
+
+    $success = 0;
+
+    foreach($rows as $row){
+
+        if($row['status'] == 'Duplicate'){
+            continue;
+        }
+
+        $raw = $row['data'];
+
+        $id = $raw[0];
+        $name = $raw[1];
+
+        $split = explode(' ', $name);
+        $first = $split[0];
+        $last = count($split) > 1 ? implode(' ', array_slice($split,1)) : null;
+
+        $user = User::create([
+            'id' => Str::uuid(),
+            'school_id' => auth()->user()->school_id,
+            'first_name' => $first,
+            'last_name' => $last,
+            'email' => $id.'@AL-IRSYAD.co.id',
+            'password' => Hash::make($id),
+            'role' => $role,
+        ]);
+
+        $success++;
+    }
+
+    session()->forget(['import_rows','import_role']);
+
+    return redirect()
+        ->route('admin.users.index')
+        ->with('success','Imported '.$success.' users successfully');
+}
+    public function importUser(Request $request){
+        $request->validate([
+        'file' => 'required|mimes:csv,txt',
+        'role' => 'required'
+    ]);
+
+    $role = $request->role;
+
+    $file = fopen($request->file('file'), 'r');
+    fgetcsv($file);
+
+    $success = 0;
+    $failed = 0;
+    $errors = [];
+
+    while (($row = fgetcsv($file, 1000, ",")) !== false) {
+
+        $idNumber = trim($row[0]);
+        $name = trim($row[1]);
+
+        $email = $idNumber . '@AL-IRSYAD.co.id';
+
+        if(User::where('email',$email)->exists()){
+            $failed++;
+            $errors[] = "$idNumber skipped (already exists)";
+            continue;
+        }
+
+        $split = explode(' ', $name);
+        $first = $split[0];
+        $last = count($split) > 1 ? implode(' ', array_slice($split,1)) : null;
+
+        $user = User::create([
+            'id' => Str::uuid(),
+            'school_id' => auth()->user()->school_id,
+            'first_name' => $first,
+            'last_name' => $last,
+            'email' => $email,
+            'password' => Hash::make($idNumber),
+            'role' => $role,
+        ]);
+
+        if($role == 'student'){
+
+            StudentProfile::create([
+                'user_id' => $user->id,
+                'nim' => $row[0],
+                'major' => $row[2],
+                'faculty' => $row[3],
+            ]);
+
+        }
+
+        if($role == 'lecturer'){
+
+            LectureProfile::create([
+                'user_id' => $user->id,
+                'nip' => $row[0],
+                'degree' => $row[2],
+                'department' => $row[3],
+            ]);
+
+        }
+
+        if($role == 'staff'){
+
+            StaffProfile::create([
+                'user_id' => $user->id,
+                'employee_id' => $row[0],
+                'job_position' => $row[2],
+                'staff_department' => $row[3],
+            ]);
+
+        }
+
+        $success++;
+    }
+
+    fclose($file);
+
+    return back()->with([
+        'success_count' => $success,
+        'failed_count' => $failed,
+        'import_errors' => $errors
+    ]);
     }
 
     

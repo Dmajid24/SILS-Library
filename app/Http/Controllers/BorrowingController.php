@@ -110,8 +110,7 @@ class BorrowingController extends Controller
             'status' => 'approved',
             
         ]);
-
-     
+        $borrowing->book->decrement('stock'); 
         return back()->with('success','Approved');
     }
 
@@ -133,8 +132,7 @@ class BorrowingController extends Controller
             'due_date' => now()->addDays(7)
         ]);
 
-        $borrowing->book->decrement('stock');
-
+        
         return back()->with('success','Book Picked Up');
 
     }

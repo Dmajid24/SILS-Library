@@ -8,6 +8,10 @@
 <div class="flex justify-between items-center">
 
 <div>
+    <a href="{{ route('dashboard') }}" 
+        class="text-indigo-600 hover:underline font-medium">
+        ← Back to Library
+    </a>
 <h1 class="text-3xl font-bold">
 My Borrowed Books
 </h1>

@@ -7,8 +7,8 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use App\Models\School;
@@ -34,7 +34,6 @@ Route::get('/', function () {
 Route::middleware('auth')->get('/dashboard', function () {
 
     return match (auth()->user()->role) {
-        'super_admin' => redirect()->route('superAdmin.dashboard'),
         'admin'       => redirect()->route('admin.dashboard'),
         'student',
         'lecturer',
@@ -45,11 +44,8 @@ Route::middleware('auth')->get('/dashboard', function () {
 })->name('dashboard');
 
 
-/*
-|--------------------------------------------------------------------------
-| SUPER ADMIN
-|--------------------------------------------------------------------------
-*/
+
+
 
 
 
@@ -76,6 +72,15 @@ Route::middleware(['auth'])
 
         Route::post('/users/store',[AdminController::class, 'storeUser'])
             ->name('users.store');
+
+        Route::post('/admin/users/import/preview',[AdminController::class,'importPreview'])
+        ->name('users.import.preview');
+
+        Route::post('/admin/users/import/confirm',[AdminController::class,'importConfirm'])
+        ->name('users.import.confirm');
+
+        Route::get('/admin/users/template/{role}',[AdminController::class, 'downloadTemplate'])
+        ->name('users.template');
 
         Route::get('/users/{user}/edit', [AdminController::class,'editUser'])
             ->name('users.edit');
@@ -143,12 +148,14 @@ Route::middleware('auth')->group(function () {
     | Books
     */
     Route::resource('books', BookController::class);
-
+    Route::post('/books/{id}/review',[ReviewController::class,'store'])->name('review.store');
+    Route::get('/books/{book}/reviews',[ReviewController::class,'index'])->name('review.index');
 
     /*
     | Borrowing System
     */
     Route::post('/borrow/{book}', [BorrowingController::class,'requestUser'])
+        ->middleware(['auth','phone.filled'])
         ->name('request.borrow');
 
     Route::delete('/borrow/{borrow}/cancel', [BorrowingController::class,'cancel'])

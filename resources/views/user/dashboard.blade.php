@@ -2,134 +2,308 @@
 
 @section('content')
 
-<!-- WELCOME CARD -->
+<div class="max-w-7xl mx-auto space-y-10">
 
-<div class="bg-gradient-to-r from-slate-800 via-indigo-800 to-slate-700 rounded-3xl p-8 text-white mb-10 shadow-lg">
+{{-- ================= PHONE ALERT ================= --}}
+@if(auth()->check() && auth()->user()->role !== 'admin' && empty(auth()->user()->phone))
 
-    @if(Auth::user()->role == 'lecturer')
+<div id="phoneAlert"
+    class="relative overflow-hidden bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400
+           rounded-3xl shadow-lg p-[1px] animate-pulse">
 
-        <h1 class="text-3xl font-bold mb-2">
-            Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}, {{ Auth::user()->lectureProfile->degree }}
-        </h1>
+    <div class="bg-white rounded-3xl px-6 py-5">
 
-    @else
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-        <h1 class="text-3xl font-bold mb-2">
-            Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
-        </h1>
+            <div class="flex items-start gap-4">
 
-    @endif
+                <div class="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl">
+                    📱
+                </div>
 
-    <p class="text-gray-200 mb-6">
-        Find and borrow books from your school library
-    </p>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">
+                        Complete Your Phone Number
+                    </h3>
 
-    <form method="GET">
-        <input
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="Search books or authors..."
-            class="w-full md:w-96 px-5 py-3 rounded-xl text-gray-700 focus:ring-2 focus:ring-indigo-500 outline-none"
-        />
-    </form>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Add your phone number first to borrow books and receive library notifications.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-3">
+
+                <a href="{{ route('profile.edit') }}"
+                    class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition">
+                    Update Now
+                </a>
+
+                <button onclick="document.getElementById('phoneAlert').remove()"
+                    class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 transition">
+                    ✕
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
+@endif
 
-<!-- ANNOUNCEMENT HEADER -->
 
-<div class="flex justify-between items-center mb-6">
+{{-- ================= HERO ================= --}}
+<div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 
+            rounded-3xl p-10 text-white shadow-lg relative overflow-hidden">
 
-    <h2 class="text-xl font-semibold text-gray-800">
-        📢 Library Events
-    </h2>
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
 
-    @if(auth()->user()->role === 'lecturer')
-        <a
-            href="{{ route('admin.information.index') }}"
-            class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
-        >
-            📢 Manage Announcement
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+        <div>
+            @if(Auth::user()->role == 'lecturer')
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                    Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }},
+                    {{ Auth::user()->lectureProfile->degree }}
+                </h1>
+            @else
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                    Hello {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                </h1>
+            @endif
+
+            <p class="text-white/80">
+                Discover, explore, and borrow your favorite books 📚
+            </p>
+        </div>
+
+        <form method="GET" class="w-full md:w-96">
+            <input
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search books or authors..."
+                class="w-full px-5 py-3 rounded-xl text-gray-700 shadow
+                       focus:ring-2 focus:ring-white outline-none"
+            />
+        </form>
+
+    </div>
+
+</div>
+
+{{-- ================= ANNOUNCEMENT ================= --}}
+<div>
+
+    <div class="flex justify-between items-center mb-6">
+
+        <h2 class="text-2xl font-semibold text-gray-800">
+            📢 Library Events
+        </h2>
+
+        @if(auth()->user()->role === 'lecturer')
+            <a
+                href="{{ route('admin.information.index') }}"
+                class="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow hover:bg-indigo-700 transition">
+                Manage
+            </a>
+        @endif
+
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+        @forelse($info as $i)
+
+        <a href="{{ route('information.show',$i->id) }}">
+
+            <div class="bg-white/80 backdrop-blur border border-white/40 
+                        p-6 rounded-2xl shadow-sm hover:shadow-xl 
+                        transition hover:-translate-y-1">
+
+                <h3 class="font-semibold text-lg text-gray-800 line-clamp-2">
+                    {{ $i->title }}
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-2 line-clamp-2">
+                    {{ Str::limit($i->description, 80) }}
+                </p>
+
+                <div class="mt-4 text-indigo-600 text-sm font-medium">
+                    Read more →
+                </div>
+
+            </div>
+
         </a>
-    @endif
+
+        @empty
+            <p class="text-gray-400">No announcements yet</p>
+        @endforelse
+
+    </div>
 
 </div>
 
 
-<!-- ANNOUNCEMENT LIST -->
+{{-- ================= BOOK SECTION ================= --}}
+<div>
 
-<div class="grid md:grid-cols-3 gap-6 mb-12">
+    <div class="flex justify-between items-center mb-6">
 
-@foreach($info as $i)
+        <h2 class="text-2xl font-semibold text-gray-800">
+            📚 Explore Books
+        </h2>
 
-<a href="{{ route('information.show',$i->id) }}">
+        <span class="text-sm text-gray-500">
+            {{ count($book) }} books available
+        </span>
 
-<div class="bg-white border border-gray-200 p-6 rounded-2xl shadow hover:shadow-lg transition hover:-translate-y-1">
+    </div>
 
-<h3 class="font-semibold text-lg mb-2 text-gray-800">
-{{ $i->title }}
-</h3>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
 
-<p class="text-xs mt-3 text-indigo-600 font-medium">
-See Details →
-</p>
+        @forelse($book as $b)
+
+        <div class="bg-white rounded-3xl overflow-hidden shadow-sm 
+                    hover:shadow-xl transition transform hover:-translate-y-1">
+
+            {{-- COVER --}}
+            <div class="relative">
+                <img
+                src="{{ $b->cover ? asset('storage/'.$b->cover) : 'https://placehold.co/300x400' }}"
+                class="w-full h-60 object-cover">
+
+                <div class="absolute top-3 right-3 bg-white/90 text-xs px-2 py-1 rounded-lg shadow">
+                    {{ $b->stock }} left
+                </div>
+            </div>
+
+            {{-- CONTENT --}}
+            <div class="p-5">
+
+                <h3 class="font-semibold text-gray-800 text-lg line-clamp-2">
+                    {{ $b->title }}
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ $b->author }}
+                </p>
+
+                <div class="mt-4 flex justify-between items-center">
+
+                    <span class="text-green-600 text-sm font-medium">
+                        Available
+                    </span>
+
+                    <a
+                    href="{{ route('books.show',$b->id) }}"
+                    class="text-indigo-600 text-sm font-semibold hover:underline">
+                        Detail →
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @empty
+            <p class="text-gray-400">No books found</p>
+        @endforelse
+
+    </div>
 
 </div>
 
-</a>
 
-@endforeach
+{{-- ================= FAQ ================= --}}
+<div>
+
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-800">
+            ❓ Help & FAQ
+        </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+
+        {{-- ITEM --}}
+        <div x-data="{ open: false }"
+            class="bg-white/80 backdrop-blur border border-white/40 
+                   rounded-3xl p-6 shadow-sm hover:shadow-xl transition">
+
+            <button @click="open = !open"
+                class="w-full flex justify-between items-center">
+
+                <span class="font-semibold text-gray-800 text-left">
+                    How do I borrow a book?
+                </span>
+
+                <span class="text-indigo-600 text-xl"
+                      x-text="open ? '−' : '+'"></span>
+            </button>
+
+            <div x-show="open" x-transition
+                 class="mt-4 text-sm text-gray-500 leading-relaxed">
+                Go to the book detail page and click the borrow button. 
+                Make sure the book is available.
+            </div>
+        </div>
+
+        {{-- ITEM --}}
+        <div x-data="{ open: false }"
+            class="bg-white/80 backdrop-blur border border-white/40 
+                   rounded-3xl p-6 shadow-sm hover:shadow-xl transition">
+
+            <button @click="open = !open"
+                class="w-full flex justify-between items-center">
+
+                <span class="font-semibold text-gray-800 text-left">
+                    How long is the borrowing period?
+                </span>
+
+                <span class="text-indigo-600 text-xl"
+                      x-text="open ? '−' : '+'"></span>
+            </button>
+
+            <div x-show="open" x-transition
+                 class="mt-4 text-sm text-gray-500 leading-relaxed">
+                You can borrow books for up to 7 days.
+            </div>
+        </div>
+
+        
+
+        {{-- ITEM --}}
+        <div x-data="{ open: false }"
+            class="bg-white/80 backdrop-blur border border-white/40 
+                   rounded-3xl p-6 shadow-sm hover:shadow-xl transition">
+
+            <button @click="open = !open"
+                class="w-full flex justify-between items-center">
+
+                <span class="font-semibold text-gray-800 text-left">
+                    Can I reserve a book?
+                </span>
+
+                <span class="text-indigo-600 text-xl"
+                      x-text="open ? '−' : '+'"></span>
+            </button>
+
+            <div x-show="open" x-transition
+                 class="mt-4 text-sm text-gray-500 leading-relaxed">
+                Yes, if the book is out of stock, you can reserve it.
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
-
-<!-- BOOK SECTION -->
-
-<h2 class="text-xl font-semibold mb-6 text-gray-800">
-Explore Books
-</h2>
-
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
-@foreach($book as $b)
-
-<div class="bg-white rounded-3xl overflow-hidden shadow hover:shadow-xl transition transform hover:-translate-y-1">
-
-<img
-src="{{ $b->cover ? asset('storage/'.$b->cover) : 'https://placehold.co/300x400' }}"
-class="w-full h-56 object-cover">
-
-<div class="p-5">
-
-<h3 class="font-semibold text-gray-800 text-lg">
-{{ $b->title }}
-</h3>
-
-<p class="text-sm text-gray-500 mt-1">
-{{ $b->author }}
-</p>
-
-<div class="flex justify-between items-center mt-4">
-
-<span class="text-green-600 text-sm font-medium">
-{{ $b->stock }} available
-</span>
-
-<a
-href="{{ route('books.show',$b->id) }}"
-class="text-indigo-600 text-sm font-semibold hover:underline">
-
-Detail →
-
-</a>
-
-</div>
-
-</div>
-
-</div>  
-
-@endforeach
 
 </div>
 

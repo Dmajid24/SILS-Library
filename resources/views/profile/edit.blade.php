@@ -2,75 +2,167 @@
 
 @section('content')
 
-<div class="max-w-5xl mx-auto space-y-8">
+<div class="max-w-6xl mx-auto space-y-10">
 
-{{-- PROFILE HEADER --}}
-<div class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-8 text-white shadow">
+{{-- ================= PROFILE HEADER ================= --}}
+<div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500
+            rounded-3xl p-8 text-white shadow-lg overflow-hidden">
 
-<div class="flex items-center gap-6">
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
 
-<div class="w-20 h-20 rounded-full bg-white text-purple-600 flex items-center justify-center text-3xl font-bold">
-{{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->name,0,1)) }}
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+
+        {{-- LEFT --}}
+        <div class="flex items-center gap-5">
+
+            {{-- AVATAR --}}
+            <div class="w-20 h-20 rounded-2xl bg-white text-indigo-600
+                        flex items-center justify-center text-3xl font-bold shadow-lg">
+                {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->name,0,1)) }}
+            </div>
+
+            {{-- INFO --}}
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold leading-tight">
+                    {{ auth()->user()->first_name }}
+                    {{ auth()->user()->last_name }}
+                </h1>
+
+                <p class="text-white/80 text-sm mt-1">
+                    {{ auth()->user()->email }}
+                </p>
+
+                <div class="flex flex-wrap gap-2 mt-3">
+
+                    <span class="px-3 py-1 text-xs bg-white/20 rounded-full">
+                        {{ ucfirst(auth()->user()->role) }}
+                    </span>
+
+                    @if(auth()->user()->phone)
+                        <span class="px-3 py-1 text-xs bg-emerald-400/20 rounded-full">
+                            📱 {{ auth()->user()->phone }}
+                        </span>
+                    @else
+                        <span class="px-3 py-1 text-xs bg-red-400/20 rounded-full">
+                            ⚠ Phone not added
+                        </span>
+                    @endif
+
+                </div>
+            </div>
+
+        </div>
+
+        {{-- RIGHT --}}
+        <div class="text-sm text-white/80 text-right">
+            <p>Member since</p>
+            <p class="font-semibold">
+                {{ auth()->user()->created_at->format('d M Y') }}
+            </p>
+        </div>
+
+    </div>
+
 </div>
 
-<div>
 
-<h1 class="text-2xl font-bold">
-{{ auth()->user()->first_name ?? auth()->user()->name }}
-</h1>
+{{-- ================= ALERT PHONE ================= --}}
+@if(empty(auth()->user()->phone))
+<div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 shadow-sm">
 
-<p class="opacity-90">
-{{ auth()->user()->email }}
-</p>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-<span class="inline-block mt-2 px-3 py-1 text-sm bg-white/20 rounded-full">
-{{ ucfirst(auth()->user()->role) }}
-</span>
+        <div>
+            <h3 class="font-semibold text-amber-700">
+                Complete your phone number
+            </h3>
+
+            <p class="text-sm text-amber-600 mt-1">
+                Add your phone number to enable borrowing books and receive notifications.
+            </p>
+        </div>
+
+        <div class="text-sm text-amber-700 font-medium">
+            Required for borrowing 📚
+        </div>
+
+    </div>
+
+</div>
+@endif
+
+
+{{-- ================= GRID CONTENT ================= --}}
+<div class="grid md:grid-cols-2 gap-8">
+
+    {{-- PERSONAL INFO --}}
+    <div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-8">
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+            ✏️ Personal Information
+        </h2>
+
+        @include('profile.partials.update-profile-information-form')
+
+    </div>
+
+
+    {{-- PASSWORD --}}
+    <div class="bg-white border border-gray-100 shadow-sm rounded-3xl p-8">
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+            🔒 Change Password
+        </h2>
+
+        @include('profile.partials.update-password-form')
+
+    </div>
 
 </div>
 
-</div>
+
+{{-- ================= ACCOUNT STATS ================= --}}
+<div class="grid md:grid-cols-3 gap-6">
+
+    <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+        <p class="text-sm text-gray-500">Account Role</p>
+        <h3 class="text-xl font-bold text-indigo-600 mt-2">
+            {{ ucfirst(auth()->user()->role) }}
+        </h3>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+        <p class="text-sm text-gray-500">Email Status</p>
+        <h3 class="text-xl font-bold text-emerald-600 mt-2">
+            Verified
+        </h3>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+        <p class="text-sm text-gray-500">Phone Status</p>
+        <h3 class="text-xl font-bold mt-2 {{ auth()->user()->phone ? 'text-emerald-600' : 'text-red-500' }}">
+            {{ auth()->user()->phone ? 'Completed' : 'Missing' }}
+        </h3>
+    </div>
 
 </div>
 
 
-{{-- PERSONAL INFO --}}
-<div class="bg-white shadow rounded-3xl p-8">
+{{-- ================= DANGER ZONE ================= --}}
+<div class="bg-white border border-red-200 shadow-sm rounded-3xl p-8">
 
-<h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center gap-2">
-✏️ Personal Information
-</h2>
+    <h2 class="text-lg font-semibold text-red-600 mb-4 flex items-center gap-2">
+        ⚠️ Danger Zone
+    </h2>
 
-@include('profile.partials.update-profile-information-form')
+    <p class="text-sm text-gray-500 mb-6">
+        Deleting your account will permanently remove all data and borrowing history.
+        This action cannot be undone.
+    </p>
 
-</div>
-
-
-{{-- PASSWORD --}}
-<div class="bg-white shadow rounded-3xl p-8">
-
-<h2 class="text-xl font-semibold mb-6 text-gray-800 flex items-center gap-2">
-🔒 Change Password
-</h2>
-
-@include('profile.partials.update-password-form')
-
-</div>
-
-
-{{-- DANGER ZONE --}}
-<div class="bg-white shadow rounded-3xl p-8 border border-red-200">
-
-<h2 class="text-xl font-semibold mb-6 text-red-600 flex items-center gap-2">
-⚠️ Danger Zone
-</h2>
-
-<p class="text-sm text-gray-500 mb-4">
-Deleting your account will permanently remove all data.
-This action cannot be undone.
-</p>
-
-@include('profile.partials.delete-user-form')
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
+        @include('profile.partials.delete-user-form')
+    </div>
 
 </div>
 

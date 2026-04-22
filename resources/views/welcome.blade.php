@@ -15,16 +15,24 @@
 <!-- ================= NAVBAR ================= -->
 <div class="flex justify-between items-center mb-16">
 
-<div class="flex items-center gap-3">
+<div class="flex items-center gap-4">
 
 @if(($school ?? null) && $school->logo)
+<div class="bg-white/80 p-2 rounded-2xl shadow-md border border-white/70">
 <img src="{{ asset('storage/'.$school->logo) }}"
-class="w-10 h-10 object-contain rounded-lg shadow">
+class="w-16 h-16 md:w-20 md:h-20 object-contain">
+</div>
 @endif
 
-<h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+<div>
+<h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent leading-tight">
 {{ $school->name ?? 'SILS Library' }}
 </h1>
+
+<p class="text-sm text-gray-500">
+Smart Integrated Library
+</p>
+</div>
 
 </div>
 
@@ -153,8 +161,10 @@ Clean UI designed to be smooth and enjoyable.
 <div class="flex items-start gap-4">
 
 @if(($school ?? null) && $school->logo)
+<div class="bg-white p-2 rounded-2xl shadow border">
 <img src="{{ asset('storage/'.$school->logo) }}"
-class="w-14 h-14 object-contain rounded-xl shadow">
+class="w-16 h-16 object-contain">
+</div>
 @endif
 
 <div>

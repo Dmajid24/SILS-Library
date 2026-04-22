@@ -4,8 +4,6 @@
 
 <div class="max-w-6xl mx-auto space-y-8">
 
-
-
 {{-- BACK BUTTON --}}
 <a href="{{ route('dashboard') }}" 
 class="text-indigo-600 hover:underline font-medium">
@@ -110,34 +108,126 @@ Not Available
 @endif
 
 </div>
+{{-- ================= REVIEW SECTION ================= --}}
+<div class="bg-white rounded-3xl shadow-lg p-8 border border-gray-100 space-y-6">
+
+<h2 class="text-xl font-semibold text-gray-800">
+⭐ User Reviews
+</h2>
+
+{{-- FORM --}}
+<form method="POST" action="{{ route('review.store',$book->id) }}" class="space-y-4">
+@csrf
+
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+        Your Rating
+    </label>
+
+    <select name="rating"
+        class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+
+        <option value="">Select Rating</option>
+        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+        <option value="4">⭐⭐⭐⭐ (4)</option>
+        <option value="3">⭐⭐⭐ (3)</option>
+        <option value="2">⭐⭐ (2)</option>
+        <option value="1">⭐ (1)</option>
+    </select>
+</div>
+
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+        Comment
+    </label>
+
+    <textarea name="comment" rows="3"
+        class="w-full border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="Write your thoughts..."></textarea>
+</div>
+
+<button type="submit"
+class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl shadow">
+Submit Review
+</button>
+
+</form>
+
+<div class="flex justify-between items-center">
+    <h2 class="text-xl font-semibold text-gray-800">
+        ⭐ User Reviews
+    </h2>
+
+    <a href="{{ route('review.index',$book->id) }}"
+       class="text-indigo-600 text-sm font-medium hover:underline">
+        View All →
+    </a>
+</div>
+{{-- LIST REVIEW --}}
+<div class="space-y-4">
+
+@forelse($book->reviews as $review)
+
+<div class="bg-gray-50 p-4 rounded-xl border">
+
+<div class="flex justify-between items-center mb-2">
+    <span class="font-semibold text-gray-800">
+        {{ $review->user->first_name }}
+    </span>
+
+    <span class="text-yellow-500 text-sm">
+        {!! str_repeat('⭐',$review->rating) !!}
+    </span>
+</div>
+
+<p class="text-gray-600 text-sm">
+    {{ $review->comment }}
+</p>
 
 </div>
 
+@empty
+
+<p class="text-gray-400 text-sm">
+No reviews yet. Be the first!
+</p>
+
+@endforelse
+
+</div>
+
+</div>
+
+</div>
 
 {{-- ================= BORROW MODAL ================= --}}
 <div id="borrow-modal"
-class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[999]">
+class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[999] transition">
 
-<div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
+<div class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center 
+transform scale-95 opacity-0 transition duration-300"
+id="modal-content">
 
-<h2 class="text-xl font-semibold mb-4">
+<div class="text-4xl mb-3">📚</div>
+
+<h2 class="text-xl font-semibold mb-2 text-gray-800">
 Confirm Borrow
 </h2>
 
-<p class="text-gray-600 mb-6">
+<p class="text-gray-500 mb-6">
 Are you sure you want to borrow this book?
 </p>
 
-<div class="flex justify-center gap-4">
+<div class="flex justify-center gap-3">
 
 <button onclick="borrowModal.submit()" 
-class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg">
-Yes
+class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl shadow">
+Yes, Borrow
 </button>
 
 <button onclick="borrowModal.close()" 
-class="bg-gray-300 hover:bg-gray-400 px-5 py-2 rounded-lg">
-No
+class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-xl">
+Cancel
 </button>
 
 </div>
@@ -152,15 +242,26 @@ No
 const borrowModal = {
 
     modal: document.getElementById('borrow-modal'),
+    content: document.getElementById('modal-content'),
 
     open(){
         this.modal.classList.remove('hidden');
         this.modal.classList.add('flex');
+
+        setTimeout(() => {
+            this.content.classList.remove('scale-95','opacity-0');
+            this.content.classList.add('scale-100','opacity-100');
+        }, 10);
     },
 
     close(){
-        this.modal.classList.add('hidden');
-        this.modal.classList.remove('flex');
+        this.content.classList.remove('scale-100','opacity-100');
+        this.content.classList.add('scale-95','opacity-0');
+
+        setTimeout(() => {
+            this.modal.classList.add('hidden');
+            this.modal.classList.remove('flex');
+        }, 200);
     },
 
     submit(){
