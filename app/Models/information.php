@@ -26,4 +26,17 @@ class Information extends Model
     {
         return $this->belongsTo(school::class);
     }
+
+    public function getTitleAttribute($value)
+    {
+        $translations = json_decode($value, true);
+    
+        // Cek jika json_decode berhasil dan hasilnya adalah array
+        if (is_array($translations)) {
+            return $translations[app()->getLocale()] ?? $translations['id'] ?? $value;
+        }
+    
+        // Jika bukan JSON (teks biasa), langsung kembalikan nilainya
+        return $value;
+    }
 }
