@@ -6,17 +6,15 @@
 
     {{-- ================= HEADER ================= --}}
     <div class="flex items-center justify-between">
-
         <div>
             <h1 class="text-3xl font-bold text-gray-800">
-                🏫 School Settings
+                🏫 {{ __('school.title') }}
             </h1>
 
             <p class="text-gray-500">
-                Manage your school identity & branding
+                {{ __('school.subtitle') }}
             </p>
         </div>
-
     </div>
 
 
@@ -37,8 +35,7 @@
             <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
 
             <div class="relative z-10">
-
-                <p class="text-sm text-white/70 mb-4">Live Preview</p>
+                <p class="text-sm text-white/70 mb-4">{{ __('school.live_preview') }}</p>
 
                 @if($school->logo)
                 <img src="{{ asset('storage/'.$school->logo) }}"
@@ -46,12 +43,12 @@
                 @else
                 <div class="w-24 h-24 mx-auto mb-4 rounded-2xl
                             bg-white/20 flex items-center justify-center text-white">
-                    No Logo
+                    {{ __('school.no_logo') }}
                 </div>
                 @endif
 
                 <h2 class="font-semibold text-lg">
-                    {{ $school->name ?? 'School Name' }}
+                    {{ $school->name ?? __('school.school_name') }}
                 </h2>
 
                 <p class="text-sm text-white/80 mt-1">
@@ -59,17 +56,14 @@
                 </p>
 
                 <p class="text-xs text-white/60 mt-2">
-                    Branding Preview
+                    {{ __('school.branding_preview') }}
                 </p>
-
             </div>
-
         </div>
 
 
         {{-- ================= RIGHT: FORM ================= --}}
         <div class="md:col-span-2">
-
             <form action="{{ route('admin.school.update') }}"
                   method="POST"
                   enctype="multipart/form-data"
@@ -81,7 +75,7 @@
                 {{-- NAME --}}
                 <div>
                     <label class="text-sm text-gray-600 font-medium">
-                        School Name
+                        {{ __('school.school_name') }}
                     </label>
 
                     <input type="text" name="name"
@@ -97,7 +91,7 @@
                 {{-- ADDRESS --}}
                 <div>
                     <label class="text-sm text-gray-600 font-medium">
-                        Address
+                        {{ __('school.address') }}
                     </label>
 
                     <textarea name="address"
@@ -116,7 +110,7 @@
                     {{-- EMAIL --}}
                     <div>
                         <label class="text-sm text-gray-600 font-medium">
-                            Email
+                            {{ __('school.email') }}
                         </label>
 
                         <input type="email" name="email"
@@ -131,7 +125,7 @@
                     {{-- PHONE --}}
                     <div>
                         <label class="text-sm text-gray-600 font-medium">
-                            Phone
+                            {{ __('school.phone') }}
                         </label>
 
                         <input type="text" name="phone"
@@ -149,7 +143,7 @@
                 {{-- LOGO --}}
                 <div>
                     <label class="text-sm text-gray-600 font-medium">
-                        School Logo
+                        {{ __('school.school_logo') }}
                     </label>
 
                     @if($school->logo)
@@ -167,25 +161,24 @@
 
 
                 {{-- BUTTON --}}
-                <div class="flex justify-end gap-3 pt-6">
 
+               
+                <div class="flex justify-end gap-3 pt-6">
+                    <a href="{{ url()->previous() }}" 
+                        class="px-6 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition font-semibold">
+                        {{ __('school.cancel') }}
+                    </a>
                     <button type="submit"
                     class="bg-gradient-to-r from-indigo-600 to-purple-600
                            hover:opacity-90 text-white px-6 py-3
                            rounded-xl font-semibold shadow-md transition">
-
-                        💾 Save Changes
-
+                        💾 {{ __('school.save_changes') }}
                     </button>
-
                 </div>
 
             </form>
-
         </div>
-
     </div>
-
 </div>
 
 @endsection

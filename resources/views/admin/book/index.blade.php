@@ -6,21 +6,20 @@
 
 {{-- ================= HEADER ================= --}}
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 w-full">
+
     <div>
         <h1 class="text-3xl font-bold flex items-center gap-2">
 
-            <span class="bg-gradient-to-r from-indigo-600 to-purple-600 
-            bg-clip-text text-transparent">
-                Manage Books
+            <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                {{ __('books.title') }}
             </span>
 
             <span class="text-gray-800">📚</span>
 
         </h1>
-        
 
         <p class="text-gray-500 mt-1">
-            Manage your library collection easily
+            {{ __('books.subtitle') }}
         </p>
     </div>
 
@@ -29,27 +28,22 @@
         {{-- SEARCH --}}
         <form method="GET" class="relative">
             <input
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="🔎 Search books..."
-            class="bg-white/80 backdrop-blur border border-white/50 
-                   px-4 py-2 rounded-xl shadow-sm
-                   focus:ring-2 focus:ring-indigo-400 outline-none transition"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="{{ __('books.search') }}"
+                class="bg-white/80 backdrop-blur border border-white/50 px-4 py-2 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none transition"
             >
         </form>
 
         {{-- ADD BUTTON --}}
         <a href="{{ route('books.create') }}"
-        class="bg-gradient-to-r from-indigo-600 to-purple-600 
-               text-white px-5 py-2 rounded-xl shadow-md 
-               hover:scale-105 transition">
-        ➕ Add Book
+        class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-xl shadow-md hover:scale-105 transition">
+            ➕ {{ __('books.add_book') }}
         </a>
 
     </div>
 
 </div>
-
 
 {{-- ================= TABLE CARD ================= --}}
 <div class="w-full bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
@@ -60,11 +54,11 @@
 
 <thead class="bg-white/60 text-gray-500 text-xs uppercase tracking-wide">
 <tr>
-<th class="p-5 text-left">Book</th>
-<th class="text-left">Author</th>
-<th class="text-left">Stock</th>
-<th class="text-left">ISBN</th>
-<th class="text-center">Action</th>
+<th class="p-5 text-left">{{ __('books.table.book') }}</th>
+<th class="text-left">{{ __('books.table.author') }}</th>
+<th class="text-left">{{ __('books.table.stock') }}</th>
+<th class="text-left">{{ __('books.table.isbn') }}</th>
+<th class="text-center">{{ __('books.table.action') }}</th>
 </tr>
 </thead>
 
@@ -93,49 +87,42 @@ class="w-14 h-20 object-cover rounded-xl shadow-md">
 
 </td>
 
-
 {{-- AUTHOR --}}
 <td class="text-gray-600 font-medium">
 {{ $book->author }}
 </td>
-
 
 {{-- STOCK --}}
 <td>
 @if($book->stock > 0)
 
 <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-{{ $book->stock }} Available
+{{ $book->stock }} {{ __('books.available') }}
 </span>
 
 @else
 
 <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-Out of Stock
+{{ __('books.out_of_stock') }}
 </span>
 
 @endif
 </td>
-
 
 {{-- ISBN --}}
 <td class="text-gray-400 text-xs">
 {{ $book->isbn }}
 </td>
 
-
 {{-- ACTION --}}
 <td>
-
 <div class="flex justify-center gap-2">
 
-{{-- EDIT --}}
 <a href="{{ route('books.edit',$book->id) }}"
 class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm shadow transition">
 ✏️
 </a>
 
-{{-- DELETE --}}
 <button
 type="button"
 onclick="openDeleteModal('{{ route('books.destroy',$book->id) }}')"
@@ -144,7 +131,6 @@ class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow">
 </button>
 
 </div>
-
 </td>
 
 </tr>
@@ -153,7 +139,7 @@ class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow">
 
 <tr>
 <td colspan="5" class="text-center py-16 text-gray-400">
-📭 No books available
+📭 {{ __('books.empty') }}
 </td>
 </tr>
 
@@ -165,8 +151,6 @@ class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow">
 
 </div>
 
-
-{{-- ================= PAGINATION ================= --}}
 <div class="p-6 border-t border-white/40 bg-white/40">
 {{ $books->links() }}
 </div>
@@ -175,7 +159,6 @@ class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow">
 
 </div>
 
-
 {{-- ================= DELETE MODAL ================= --}}
 <div id="deleteModal"
 class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50">
@@ -183,12 +166,11 @@ class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-ce
 <div class="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
 
 <h2 class="text-lg font-semibold mb-3 text-gray-800">
-Delete Book
+{{ __('books.delete_title') }}
 </h2>
 
 <p class="text-gray-500 mb-6 text-sm">
-Are you sure you want to delete this book?  
-This action cannot be undone.
+{{ __('books.delete_message') }}
 </p>
 
 <form id="deleteForm" method="POST">
@@ -197,25 +179,22 @@ This action cannot be undone.
 
     <button type="submit"
         class="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition">
-        Yes, Delete
+        {{ __('books.yes_delete') }}
     </button>
 </form>
 
 <button
 onclick="closeDeleteModal()"
 class="mt-3 text-gray-500 text-sm hover:underline">
-Cancel
+{{ __('books.cancel') }}
 </button>
 
 </div>
 
 </div>
 
-
-{{-- ================= SCRIPT ================= --}}
 <script>
 function openDeleteModal(actionUrl){
-
     const modal = document.getElementById('deleteModal');
     const form  = document.getElementById('deleteForm');
 
@@ -226,8 +205,8 @@ function openDeleteModal(actionUrl){
 }
 
 function closeDeleteModal(){
-    document.getElementById('deleteModal')
-        .classList.add('hidden');
+    document.getElementById('deleteModal').classList.add('hidden');
+    document.getElementById('deleteModal').classList.remove('flex');
 }
 </script>
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\BorrowingController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SchoolController;
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +26,23 @@ Route::get('/', function () {
     return view('welcome', compact('school'));
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Localization Route
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('web')->get('/lang/{locale}', function ($locale) {
+
+    abort_unless(in_array($locale, ['id', 'en']), 404);
+
+    session()->put('locale', $locale);
+    session()->save();
+
+    return redirect()->back();
+
+})->name('lang.switch');
 /*
 |--------------------------------------------------------------------------
 | Dashboard Redirect (ROLE BASED)

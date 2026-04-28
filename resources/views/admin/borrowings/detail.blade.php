@@ -6,8 +6,8 @@
 
 {{-- HEADER --}}
 <div>
-    <h1 class="text-3xl font-bold text-slate-800">Borrowing Detail</h1>
-    <p class="text-gray-500">Transaction information & borrower data</p>
+    <h1 class="text-3xl font-bold text-slate-800">{{ __('Borrowing Detail') }}</h1>
+    <p class="text-gray-500">{{ __('Transaction information & borrower data') }}</p>
 </div>
 
 
@@ -16,7 +16,7 @@
 {{-- ================= BOOK INFO ================= --}}
 <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
 
-<h2 class="text-lg font-semibold mb-4 text-gray-700">📚 Book Information</h2>
+<h2 class="text-lg font-semibold mb-4 text-gray-700">📚 {{ __('Book Information') }}</h2>
 
 <div class="flex gap-6">
 
@@ -46,7 +46,7 @@ class="w-28 h-40 object-cover rounded-lg shadow">
 {{-- ================= USER INFO ================= --}}
 <div class="bg-white rounded-2xl shadow p-6">
 
-<h2 class="text-lg font-semibold mb-4 text-gray-700">👤 Borrower</h2>
+<h2 class="text-lg font-semibold mb-4 text-gray-700">👤 {{ __('Borrower') }}</h2>
 
 <p class="font-semibold text-slate-800">
 {{ $borrowing->user->first_name }} {{ $borrowing->user->last_name }}
@@ -58,7 +58,7 @@ class="w-28 h-40 object-cover rounded-lg shadow">
 
 <p class="mt-3 text-sm">
 <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700">
-{{ ucfirst($borrowing->user->role) }}
+{{ __(ucfirst($borrowing->user->role)) }}
 </span>
 </p>
 
@@ -76,19 +76,19 @@ class="w-28 h-40 object-cover rounded-lg shadow">
 {{-- ================= TRANSACTION INFO ================= --}}
 <div class="bg-white rounded-2xl shadow p-6">
 
-<h2 class="text-lg font-semibold mb-6 text-gray-700">📄 Transaction</h2>
+<h2 class="text-lg font-semibold mb-6 text-gray-700">📄 {{ __('Transaction') }}</h2>
 
 <div class="grid md:grid-cols-4 gap-6 text-sm">
 
 <div>
-<p class="text-gray-400">Requested</p>
+<p class="text-gray-400">{{ __('Requested') }}</p>
 <p class="font-semibold">
 {{ $borrowing->created_at->format('d M Y') }}
 </p>
 </div>
 
 <div>
-<p class="text-gray-400">Status</p>
+<p class="text-gray-400">{{ __('Status') }}</p>
 
 <span class="
 px-3 py-1 rounded-full text-xs font-semibold
@@ -99,20 +99,20 @@ px-3 py-1 rounded-full text-xs font-semibold
 @else bg-red-100 text-red-600
 @endif
 ">
-{{ ucfirst($borrowing->status) }}
+{{ __(ucfirst($borrowing->status)) }}
 </span>
 
 </div>
 
 <div>
-<p class="text-gray-400">Due</p>
+<p class="text-gray-400">{{ __('Due') }}</p>
 <p class="font-semibold">
 {{ $borrowing->due_date ? $borrowing->due_date->format('d M Y') : '-' }}
 </p>
 </div>
 
 <div>
-<p class="text-gray-400">Returned</p>
+<p class="text-gray-400">{{ __('Returned') }}</p>
 <p class="font-semibold">
 {{ $borrowing->return_date ? $borrowing->return_date->format('d M Y') : '-' }}
 </p>
@@ -128,26 +128,26 @@ px-3 py-1 rounded-full text-xs font-semibold
 
 <button onclick="openApproveModal()"
 class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition">
-Approve
+{{ __('Approve') }}
 </button>
 
 <button onclick="openRejectModal()"
 class="px-5 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition">
-Reject
+{{ __('Reject') }}
 </button>
 
 @elseif($borrowing->status == 'approved')
 
 <button onclick="openBorrowedModal()"
 class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">
-Mark as Borrowed
+{{ __('Mark as Borrowed') }}
 </button>
 
 @elseif($borrowing->status == 'borrowed')
 
 <button onclick="openReturnedModal()"
 class="px-5 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white">
-Mark as Returned
+{{ __('Mark as Returned') }}
 </button>
 
 @endif
@@ -163,20 +163,20 @@ Mark as Returned
 <div id="approveModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 <div class="bg-white p-6 rounded-xl text-center w-80">
 
-<h2 class="font-semibold mb-3">Approve Request</h2>
-<p class="text-sm text-gray-500 mb-5">Confirm approve this borrowing?</p>
+<h2 class="font-semibold mb-3">{{ __('Approve Request') }}</h2>
+<p class="text-sm text-gray-500 mb-5">{{ __('Confirm approve this borrowing?') }}</p>
 
 <form method="POST" action="{{ url('/approve/'.$borrowing->id) }}">
 @csrf
 
 <button class="bg-green-600 text-white px-4 py-2 rounded-lg">
-Yes, Approve
+{{ __('Yes, Approve') }}
 </button>
 
 </form>
 
 <button onclick="closeApproveModal()" class="mt-3 text-gray-500 text-sm">
-Cancel
+{{ __('Cancel') }}
 </button>
 
 </div>
@@ -187,20 +187,20 @@ Cancel
 <div id="rejectModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 <div class="bg-white p-6 rounded-xl text-center w-80">
 
-<h2 class="font-semibold mb-3">Reject Request</h2>
-<p class="text-sm text-gray-500 mb-5">Are you sure want to reject?</p>
+<h2 class="font-semibold mb-3">{{ __('Reject Request') }}</h2>
+<p class="text-sm text-gray-500 mb-5">{{ __('Are you sure want to reject?') }}</p>
 
 <form method="POST" action="{{ url('/reject/'.$borrowing->id) }}">
 @csrf
 
 <button class="bg-red-500 text-white px-4 py-2 rounded-lg">
-Yes, Reject
+{{ __('Yes, Reject') }}
 </button>
 
 </form>
 
 <button onclick="closeRejectModal()" class="mt-3 text-gray-500 text-sm">
-Cancel
+{{ __('Cancel') }}
 </button>
 
 </div>
@@ -211,20 +211,20 @@ Cancel
 <div id="borrowedModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 <div class="bg-white p-6 rounded-xl text-center w-80">
 
-<h2 class="font-semibold mb-3">Mark as Borrowed</h2>
-<p class="text-sm text-gray-500 mb-5">Confirm this book has been borrowed?</p>
+<h2 class="font-semibold mb-3">{{ __('Mark as Borrowed') }}</h2>
+<p class="text-sm text-gray-500 mb-5">{{ __('Confirm this book has been borrowed?') }}</p>
 
 <form method="POST" action="{{ url('/borrowed/'.$borrowing->id) }}">
 @csrf
 
 <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg">
-Yes, Confirm
+{{ __('Yes, Confirm') }}
 </button>
 
 </form>
 
 <button onclick="closeBorrowedModal()" class="mt-3 text-gray-500 text-sm">
-Cancel
+{{ __('Cancel') }}
 </button>
 
 </div>
@@ -235,20 +235,20 @@ Cancel
 <div id="returnedModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 <div class="bg-white p-6 rounded-xl text-center w-80">
 
-<h2 class="font-semibold mb-3">Mark as Returned</h2>
-<p class="text-sm text-gray-500 mb-5">Confirm this book has been returned?</p>
+<h2 class="font-semibold mb-3">{{ __('Mark as Returned') }}</h2>
+<p class="text-sm text-gray-500 mb-5">{{ __('Confirm this book has been returned?') }}</p>
 
 <form method="POST" action="{{ url('/return/'.$borrowing->id) }}">
 @csrf
 
 <button class="bg-orange-600 text-white px-4 py-2 rounded-lg">
-Yes, Confirm
+{{ __('Yes, Confirm') }}
 </button>
 
 </form>
 
 <button onclick="closeReturnedModal()" class="mt-3 text-gray-500 text-sm">
-Cancel
+{{ __('Cancel') }}
 </button>
 
 </div>
@@ -257,7 +257,6 @@ Cancel
 
 {{-- ================= SCRIPT ================= --}}
 <script>
-
 function openApproveModal(){
 document.getElementById('approveModal').classList.remove('hidden');
 document.getElementById('approveModal').classList.add('flex');
@@ -293,7 +292,6 @@ document.getElementById('returnedModal').classList.add('flex');
 function closeReturnedModal(){
 document.getElementById('returnedModal').classList.add('hidden');
 }
-
 </script>
 
 @endsection

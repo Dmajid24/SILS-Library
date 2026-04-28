@@ -1,11 +1,13 @@
+{{-- resources/views/layouts/library.blade.php --}}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>{{ $school->name ?? 'Library System' }}</title>
+<title>{{ $school->name ?? __('layout.library_system') }}</title>
 
 @vite(['resources/css/app.css','resources/js/app.js'])
 
@@ -35,29 +37,47 @@
             <h1 class="font-semibold leading-tight 
                        bg-gradient-to-r from-indigo-600 to-purple-600 
                        bg-clip-text text-transparent">
-                {{ $school->name ?? 'Library System' }}
+                {{ $school->name ?? __('layout.library_system') }}
             </h1>
+
             <p class="text-xs text-gray-500">
-                Smart Library
+                {{ __('layout.smart_library') }}
             </p>
         </div>
 
     </a>
 
     {{-- NAV --}}
-    <nav class="flex items-center gap-6 text-sm font-medium">
+    <nav class="flex items-center gap-4 text-sm font-medium">
 
         <a href="{{ route('dashboard') }}"
            class="text-gray-600 hover:text-indigo-600 transition">
-            Dashboard
+            {{ __('layout.dashboard') }}
         </a>
 
         @if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'super_admin')
         <a href="{{ route('borrowed.index') }}"
            class="text-gray-600 hover:text-purple-600 transition">
-            My Borrowed
+            {{ __('layout.my_borrowed') }}
         </a>
         @endif
+
+        {{-- LANGUAGE SWITCH --}}
+        <div class="flex items-center bg-gray-100 rounded-xl p-1 shadow-sm">
+
+            <a href="{{ route('lang.switch',['locale'=>'id']) }}"
+               class="px-3 py-1 rounded-lg text-xs font-semibold transition duration-200
+               {{ app()->getLocale() == 'id' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-white' }}">
+                ID
+            </a>
+
+            <a href="{{ route('lang.switch',['locale'=>'en']) }}"
+               class="px-3 py-1 rounded-lg text-xs font-semibold transition duration-200
+               {{ app()->getLocale() == 'en' ? 'bg-indigo-600 text-white shadow' : 'text-gray-600 hover:bg-white' }}">
+                EN
+            </a>
+
+        </div>
 
         {{-- PROFILE --}}
         <div class="relative">
@@ -74,12 +94,12 @@
 
                 <a href="{{ route('profile.edit') }}"
                    class="block px-4 py-2 text-sm hover:bg-indigo-50 rounded-t-xl">
-                    Profile
+                    {{ __('layout.profile') }}
                 </a>
                 
                 <button type="button" onclick="openLogoutModal()" 
                 class="w-full text-left px-4 py-2 text-sm hover:bg-red-50 rounded-b-xl">
-                    Logout
+                    {{ __('layout.logout') }}
                 </button>
 
             </div>
@@ -105,7 +125,7 @@ class="fixed top-5 right-5 z-[9999]
     <div class="flex items-center gap-3">
         <span>🎉</span>
         <div>
-            <p class="font-semibold">Success</p>
+            <p class="font-semibold">{{ __('layout.success') }}</p>
             <p class="text-sm">{{ session('success') }}</p>
         </div>
     </div>
@@ -124,7 +144,7 @@ class="fixed top-5 right-5 z-[9999]
     <div class="flex items-center gap-3">
         <span>⚠️</span>
         <div>
-            <p class="font-semibold">Error</p>
+            <p class="font-semibold">{{ __('layout.error') }}</p>
             <p class="text-sm">{{ session('error') }}</p>
         </div>
     </div>
@@ -142,7 +162,7 @@ class="fixed top-5 right-5 z-[9999]
     <div class="flex items-start gap-3">
         <span>⚠️</span>
         <div>
-            <p class="font-semibold">Validation Error</p>
+            <p class="font-semibold">{{ __('layout.validation_error') }}</p>
 
             <ul class="text-sm mt-1">
                 @foreach ($errors->all() as $error)
@@ -155,6 +175,7 @@ class="fixed top-5 right-5 z-[9999]
 
 </div>
 @endif
+
 @yield('content')
 
 </main>
@@ -172,12 +193,12 @@ class="fixed top-5 right-5 z-[9999]
              class="w-6 h-6 object-contain">
         @endif
 
-        <span>{{ $school->name ?? 'School' }}</span>
+        <span>{{ $school->name ?? __('layout.school') }}</span>
 
     </div>
 
     <div class="text-center mt-2 md:mt-0">
-        © {{ date('Y') }} Library System
+        © {{ date('Y') }} {{ __('layout.library_system') }}
     </div>
 
 </div>
@@ -198,23 +219,23 @@ class="fixed top-5 right-5 z-[9999]
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
 
         <h2 class="text-lg font-semibold text-gray-800 mb-2">
-            Confirm Logout
+            {{ __('layout.confirm_logout') }}
         </h2>
 
         <p class="text-sm text-gray-500 mb-6">
-            Are you sure you want to logout?
+            {{ __('layout.logout_question') }}
         </p>
 
         <div class="flex justify-end gap-3">
 
             <button onclick="closeLogoutModal()"
             class="px-4 py-2 rounded-xl border text-gray-600 hover:bg-gray-100">
-                Cancel
+                {{ __('layout.cancel') }}
             </button>
 
             <button onclick="submitLogout()"
             class="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600">
-                Yes, Logout
+                {{ __('layout.yes_logout') }}
             </button>
 
         </div>
@@ -251,42 +272,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const success = document.getElementById('successBanner');
     const error = document.getElementById('errorBanner');
+    const validation = document.getElementById('validationBanner');
 
-    if(success){
-        setTimeout(()=>{
-            success.classList.remove('opacity-0','translate-y-[-20px]');
-        },100);
+    [success,error,validation].forEach(el => {
 
-        setTimeout(()=>{
-            success.style.opacity = '0';
-            setTimeout(()=> success.remove(),500);
-        },3000);
-    }
+        if(el){
 
-    if(error){
-        setTimeout(()=>{
-            error.classList.remove('opacity-0','translate-y-[-20px]');
-        },100);
+            setTimeout(()=>{
+                el.classList.remove('opacity-0','translate-y-[-20px]');
+            },100);
 
-        setTimeout(()=>{
-            error.style.opacity = '0';
-            setTimeout(()=> error.remove(),500);
-        },3000);
-    }
+            setTimeout(()=>{
+                el.style.opacity = '0';
+                setTimeout(()=> el.remove(),500);
+            },3000);
+
+        }
+
+    });
 
 });
-const validation = document.getElementById('validationBanner');
-
-if(validation){
-    setTimeout(()=>{
-        validation.classList.remove('opacity-0','translate-y-[-20px]');
-    },100);
-
-    setTimeout(()=>{
-        validation.style.opacity = '0';
-        setTimeout(()=> validation.remove(),500);
-    },3000);
-}   
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

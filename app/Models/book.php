@@ -13,7 +13,10 @@ class book extends Model
     use HasUuids;
     public $incrementing = false;
     protected $keyType = 'string';
-
+    protected $casts = [
+        'title' => 'array',
+        'description' => 'array',
+    ];
     protected $fillable = [
         'school_id',
         'isbn',
