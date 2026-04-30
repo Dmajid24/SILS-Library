@@ -2,13 +2,13 @@
 
 @section('content')
 
-<div class="px-6 lg:px-10 space-y-8">
+<div class="px-4 sm:px-6 lg:px-10 space-y-8">
 
 {{-- ================= HEADER ================= --}}
-<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 w-full">
+<div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5 w-full">
 
     <div>
-        <h1 class="text-3xl font-bold flex items-center gap-2">
+        <h1 class="text-2xl sm:text-3xl font-bold flex flex-wrap items-center gap-2">
 
             <span class="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 {{ __('books.title') }}
@@ -18,26 +18,26 @@
 
         </h1>
 
-        <p class="text-gray-500 mt-1">
+        <p class="text-gray-500 mt-1 text-sm sm:text-base">
             {{ __('books.subtitle') }}
         </p>
     </div>
 
-    <div class="flex gap-3 items-center">
+    <div class="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
 
         {{-- SEARCH --}}
-        <form method="GET" class="relative">
+        <form method="GET" class="relative w-full sm:w-auto">
             <input
                 name="search"
                 value="{{ request('search') }}"
                 placeholder="{{ __('books.search') }}"
-                class="bg-white/80 backdrop-blur border border-white/50 px-4 py-2 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none transition"
+                class="w-full sm:w-72 bg-white/80 backdrop-blur border border-white/50 px-4 py-2.5 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none transition"
             >
         </form>
 
         {{-- ADD BUTTON --}}
         <a href="{{ route('books.create') }}"
-        class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2 rounded-xl shadow-md hover:scale-105 transition">
+        class="text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition whitespace-nowrap">
             ➕ {{ __('books.add_book') }}
         </a>
 
@@ -45,123 +45,201 @@
 
 </div>
 
-{{-- ================= TABLE CARD ================= --}}
-<div class="w-full bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
+{{-- ================= DESKTOP TABLE ================= --}}
+<div class="hidden lg:block w-full bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/40 overflow-hidden">
 
-<div class="overflow-x-auto">
+    <div class="overflow-x-auto">
+        <table class="w-full table-auto text-sm">
 
-<table class="w-full text-sm">
+            <thead class="bg-white/60 text-gray-500 text-xs uppercase tracking-wide">
+            <tr>
+                <th class="p-5 text-left">{{ __('books.table.book') }}</th>
+                <th class="text-left">{{ __('books.table.author') }}</th>
+                <th class="text-left">{{ __('books.table.stock') }}</th>
+                <th class="text-left">{{ __('books.table.isbn') }}</th>
+                <th class="text-center">{{ __('books.table.action') }}</th>
+            </tr>
+            </thead>
 
-<thead class="bg-white/60 text-gray-500 text-xs uppercase tracking-wide">
-<tr>
-<th class="p-5 text-left">{{ __('books.table.book') }}</th>
-<th class="text-left">{{ __('books.table.author') }}</th>
-<th class="text-left">{{ __('books.table.stock') }}</th>
-<th class="text-left">{{ __('books.table.isbn') }}</th>
-<th class="text-center">{{ __('books.table.action') }}</th>
-</tr>
-</thead>
+            <tbody>
 
-<tbody>
+            @forelse($books as $book)
+
+            <tr
+            onclick="window.location='{{ route('books.show',$book->id) }}'"
+            class="group border-b border-white/40 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition duration-300 cursor-pointer">
+
+                {{-- BOOK --}}
+                <td class="p-5">
+                    <div class="flex items-center gap-4">
+
+                        <img
+                        src="{{ $book->cover ? asset('storage/'.$book->cover) : 'https://via.placeholder.com/60x80' }}"
+                        class="w-14 h-20 object-cover rounded-xl shadow-md">
+
+                        <div>
+                            <p class="font-semibold text-gray-800 group-hover:text-indigo-600 transition">
+                                {{ $book->title }}
+                            </p>
+
+                            <p class="text-sm text-gray-400">
+                                {{ $book->publisher }}
+                            </p>
+                        </div>
+
+                    </div>
+                </td>
+
+                {{-- AUTHOR --}}
+                <td class="text-gray-600 font-medium">
+                    {{ $book->author }}
+                </td>
+
+                {{-- STOCK --}}
+                <td>
+                    @if($book->stock > 0)
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                            {{ $book->stock }} {{ __('books.available') }}
+                        </span>
+                    @else
+                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
+                            {{ __('books.out_of_stock') }}
+                        </span>
+                    @endif
+                </td>
+
+                {{-- ISBN --}}
+                <td class="text-gray-400 text-xs">
+                    {{ $book->isbn }}
+                </td>
+
+                {{-- ACTION --}}
+                <td>
+                    <div class="flex justify-center gap-2">
+
+                        <a href="{{ route('books.edit',$book->id) }}"
+                        onclick="event.stopPropagation()"
+                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg shadow transition">
+                            ✏️
+                        </a>
+
+                        <button
+                        type="button"
+                        onclick="event.stopPropagation(); openDeleteModal('{{ route('books.destroy',$book->id) }}')"
+                        class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow transition">
+                            🗑
+                        </button>
+
+                    </div>
+                </td>
+
+            </tr>
+
+            @empty
+
+            <tr>
+                <td colspan="5" class="text-center py-16 text-gray-400">
+                    📭 {{ __('books.empty') }}
+                </td>
+            </tr>
+
+            @endforelse
+
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{{-- ================= MOBILE CARD VIEW ================= --}}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
 
 @forelse($books as $book)
 
-<tr class="border-b border-white/40 hover:bg-white/50 transition">
+<div
+onclick="window.location='{{ route('books.show',$book->id) }}'"
+class="bg-white/80 backdrop-blur rounded-3xl border border-white/50 shadow-md p-4 cursor-pointer active:scale-[0.99] transition">
 
-{{-- BOOK --}}
-<td class="p-5 flex items-center gap-4">
+    <div class="flex gap-4">
 
-<img
-src="{{ $book->cover ? asset('storage/'.$book->cover) : 'https://via.placeholder.com/60x80' }}"
-class="w-14 h-20 object-cover rounded-xl shadow-md">
+        <img
+        src="{{ $book->cover ? asset('storage/'.$book->cover) : 'https://via.placeholder.com/60x80' }}"
+        class="w-20 h-28 object-cover rounded-2xl shadow">
 
-<div>
-<p class="font-semibold text-gray-800">
-{{ $book->title }}
-</p>
+        <div class="flex-1 min-w-0">
 
-<p class="text-sm text-gray-400">
-{{ $book->publisher }}
-</p>
-</div>
+            <h3 class="font-semibold text-gray-800 line-clamp-2">
+                {{ $book->title }}
+            </h3>
 
-</td>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ $book->author }}
+            </p>
 
-{{-- AUTHOR --}}
-<td class="text-gray-600 font-medium">
-{{ $book->author }}
-</td>
+            <p class="text-xs text-gray-400 mt-1 truncate">
+                {{ $book->publisher }}
+            </p>
 
-{{-- STOCK --}}
-<td>
-@if($book->stock > 0)
+            <p class="text-xs text-gray-400 mt-2">
+                ISBN: {{ $book->isbn }}
+            </p>
 
-<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-{{ $book->stock }} {{ __('books.available') }}
-</span>
+            <div class="mt-3">
+                @if($book->stock > 0)
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                        {{ $book->stock }} {{ __('books.available') }}
+                    </span>
+                @else
+                    <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
+                        {{ __('books.out_of_stock') }}
+                    </span>
+                @endif
+            </div>
 
-@else
+        </div>
 
-<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-{{ __('books.out_of_stock') }}
-</span>
+    </div>
 
-@endif
-</td>
+    <div class="flex gap-2 mt-4">
 
-{{-- ISBN --}}
-<td class="text-gray-400 text-xs">
-{{ $book->isbn }}
-</td>
+        <a href="{{ route('books.edit',$book->id) }}"
+        onclick="event.stopPropagation()"
+        class="flex-1 text-center bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-xl text-sm font-medium">
+            ✏️ Edit
+        </a>
 
-{{-- ACTION --}}
-<td>
-<div class="flex justify-center gap-2">
+        <button
+        type="button"
+        onclick="event.stopPropagation(); openDeleteModal('{{ route('books.destroy',$book->id) }}')"
+        class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl text-sm font-medium">
+            🗑 Delete
+        </button>
 
-<a href="{{ route('books.edit',$book->id) }}"
-class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg text-sm shadow transition">
-✏️
-</a>
-
-<button
-type="button"
-onclick="openDeleteModal('{{ route('books.destroy',$book->id) }}')"
-class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white shadow">
-🗑
-</button>
+    </div>
 
 </div>
-</td>
-
-</tr>
 
 @empty
 
-<tr>
-<td colspan="5" class="text-center py-16 text-gray-400">
-📭 {{ __('books.empty') }}
-</td>
-</tr>
+<div class="col-span-full text-center py-16 text-gray-400 bg-white rounded-3xl">
+    📭 {{ __('books.empty') }}
+</div>
 
 @endforelse
 
-</tbody>
-
-</table>
-
 </div>
 
-<div class="p-6 border-t border-white/40 bg-white/40">
-{{ $books->links() }}
-</div>
-
+{{-- PAGINATION --}}
+<div class="p-2 sm:p-4">
+    {{ $books->links() }}
 </div>
 
 </div>
 
 {{-- ================= DELETE MODAL ================= --}}
 <div id="deleteModal"
-class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50">
+class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
 
 <div class="bg-white/90 backdrop-blur rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
 
@@ -178,7 +256,7 @@ class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-ce
     @method('DELETE')
 
     <button type="submit"
-        class="bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2 rounded-lg shadow hover:scale-105 transition">
+        class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-5 py-2.5 rounded-lg shadow">
         {{ __('books.yes_delete') }}
     </button>
 </form>

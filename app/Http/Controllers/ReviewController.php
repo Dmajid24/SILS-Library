@@ -33,5 +33,11 @@ class ReviewController extends Controller
 
         return back()->with('success','Review submitted!');
     }
+    public function destroy($id)
+    {
+        Review::findOrFail($id)->delete();
+
+        return back()->with('success','Review deleted');
+    }
 }
 

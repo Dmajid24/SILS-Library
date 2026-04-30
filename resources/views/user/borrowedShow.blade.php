@@ -2,249 +2,288 @@
 
 @section('content')
 
-<div class="max-w-5xl mx-auto space-y-8">
-<a href="{{ route('borrowed.index') }}" 
-class="text-indigo-600 hover:underline font-medium">
-← Back
-</a>
-<h1 class="text-3xl font-bold text-gray-800">
-📖 Borrowing Detail
-</h1>
+<div class="max-w-5xl mx-auto space-y-6 sm:space-y-8">
+
+    {{-- BACK --}}
+    <a href="{{ route('borrowed.index') }}"
+       class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition group text-sm sm:text-base">
+        <span class="group-hover:-translate-x-1 transition-transform mr-2">
+            {{ __('borrowed.back') }}
+        </span>
+    </a>
 
 
-<div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
 
-<div class="grid md:grid-cols-3 gap-10">
+    {{-- TITLE --}}
+    <h1 class="text-2xl sm:text-3xl font-black text-gray-800 tracking-tight">
+        📖 {{ __('borrowed.detail_title') }}
+    </h1>
 
-{{-- ================================= --}}
-{{-- BOOK COVER --}}
-{{-- ================================= --}}
-<div class="flex flex-col items-center">
 
-<img
-src="{{ $borrow->book->cover ? asset('storage/'.$borrow->book->cover) : 'https://placehold.co/220x320' }}"
-class="w-52 h-72 object-cover rounded-2xl shadow-lg">
 
-{{-- STATUS BADGE --}}
-<div class="mt-5">
+    {{-- MAIN CARD --}}
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl sm:rounded-[2.5rem]
+                shadow-2xl shadow-indigo-100/50 border border-white overflow-hidden">
 
-@if($borrow->status == 'requested')
-<span class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-semibold">
-🕐 Requested
-</span>
+        <div class="grid grid-cols-1 md:grid-cols-3">
 
-@elseif($borrow->status == 'borrowed')
-<span class="bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold">
-📚 Borrowed
-</span>
+            {{-- LEFT SIDE --}}
+            <div class="p-6 sm:p-8 lg:p-10 bg-gray-50/50 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center text-center">
 
-@elseif($borrow->status == 'returned')
-<span class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-semibold">
-✔ Returned
-</span>
-@endif
+                <div class="relative group">
+
+                    <img
+                        src="{{ $borrow->book->cover ? asset('storage/'.$borrow->book->cover) : 'https://placehold.co/220x320' }}"
+                        class="w-40 sm:w-48 lg:w-52 h-60 sm:h-68 lg:h-72 object-cover rounded-3xl shadow-2xl group-hover:scale-105 transition-transform duration-500">
+
+                    {{-- STATUS --}}
+                    <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap shadow-xl">
+
+                        @if($borrow->status == 'requested')
+                        <span class="bg-amber-100 text-amber-700 px-4 sm:px-6 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase border border-amber-200">
+                            🕐 {{ __('borrowed.status.requested') }}
+                        </span>
+
+                        @elseif($borrow->status == 'borrowed')
+                        <span class="bg-blue-100 text-blue-700 px-4 sm:px-6 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase border border-blue-200">
+                            📚 {{ __('borrowed.status.borrowed') }}
+                        </span>
+
+                        @elseif($borrow->status == 'returned')
+                        <span class="bg-emerald-100 text-emerald-700 px-4 sm:px-6 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase border border-emerald-200">
+                            ✔ {{ __('borrow.status.returned') }}
+                        </span>
+                        @endif
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            {{-- RIGHT SIDE --}}
+            <div class="md:col-span-2 p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8">
+
+                {{-- BOOK INFO --}}
+                <div>
+
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-900 leading-tight mb-2">
+                        {{ $borrow->book->title }}
+                    </h2>
+
+                    <p class="text-indigo-600 font-semibold text-base sm:text-lg italic">
+                        by {{ $borrow->book->author }}
+                    </p>
+
+                </div>
+
+
+
+                {{-- INFO BOX --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                            {{ __('borrowed.info.borrow_date') }}
+                        </p>
+
+                        <p class="font-bold text-gray-800 text-base sm:text-lg">
+                            {{ $borrow->borrow_date ? \Carbon\Carbon::parse($borrow->borrow_date)->format('d M Y') : '-' }}
+                        </p>
+                    </div>
+
+
+
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                            {{ __('borrowed.info.return_date') }}
+                        </p>
+
+                        <p class="font-bold text-gray-800 text-base sm:text-lg">
+                            {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date)->format('d M Y') : '-' }}
+                        </p>
+                    </div>
+
+                </div>
+
+
+
+                {{-- TIMELINE --}}
+                <div>
+
+                    <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-5">
+                        {{ __('borrowed.info.timeline') }}
+                    </h3>
+
+                    <div class="relative space-y-6 before:absolute before:left-[11px] before:top-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-indigo-200 before:via-gray-100 before:to-transparent">
+
+                        {{-- STEP 1 --}}
+                        <div class="relative flex items-start">
+                            <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-amber-400 border-4 border-white shadow-sm z-10"></div>
+
+                            <div class="ml-10">
+                                <p class="text-sm font-bold text-gray-800">
+                                    {{ __('borrowed.info.request_sent') }}
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    {{ $borrow->created_at->format('d M Y, H:i') }}
+                                </p>
+                            </div>
+                        </div>
+
+
+
+                        {{-- STEP 2 --}}
+                        @if($borrow->status == 'borrowed' || $borrow->status == 'returned')
+                        <div class="relative flex items-start">
+                            <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-blue-500 border-4 border-white shadow-sm z-10"></div>
+
+                            <div class="ml-10">
+                                <p class="text-sm font-bold text-gray-800">
+                                    {{ __('borrowed.info.book_taken') }}
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    {{ $borrow->borrow_date ? \Carbon\Carbon::parse($borrow->borrow_date)->format('d M Y') : '-' }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+
+
+                        {{-- STEP 3 --}}
+                        @if($borrow->status == 'returned')
+                        <div class="relative flex items-start">
+                            <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-white shadow-sm z-10"></div>
+
+                            <div class="ml-10">
+                                <p class="text-sm font-bold text-gray-800">
+                                    {{ __('borrowed.info.book_returned') }}
+                                </p>
+
+                                <p class="text-xs text-gray-400">
+                                    {{ $borrow->return_date ? \Carbon\Carbon::parse($borrow->return_date)->format('d M Y') : '-' }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+
+                    </div>
+
+                </div>
+
+
+
+                {{-- ACTION --}}
+                @if($borrow->status == 'requested')
+                <div class="pt-6 border-t border-gray-100">
+
+                    <form id="cancelForm"
+                          action="{{ route('borrow.cancel', $borrow->id) }}"
+                          method="POST"
+                          class="flex justify-end">
+
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="button"
+                                onclick="cancelModal.open()"
+                                class="w-full sm:w-auto flex justify-center items-center gap-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white px-6 sm:px-8 py-3 rounded-2xl font-bold transition shadow-lg shadow-red-100">
+                            <span>✕</span>
+                            {{ __('borrowed.action.cancel_btn') }}
+                        </button>
+
+                    </form>
+
+                </div>
+                @endif
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-</div>
 
 
-{{-- ================================= --}}
-{{-- BOOK DETAIL --}}
-{{-- ================================= --}}
-<div class="md:col-span-2 space-y-6">
-
-<div>
-<h2 class="text-2xl font-semibold text-gray-800">
-{{ $borrow->book->title }}
-</h2>
-
-<p class="text-gray-500">
-by {{ $borrow->book->author }}
-</p>
-</div>
-
-
-{{-- BORROW INFO --}}
-<div class="grid grid-cols-2 gap-4 text-sm">
-
-<div class="bg-gradient-to-br from-indigo-50 to-white p-4 rounded-xl border">
-<p class="text-gray-500">Borrow Date</p>
-<p class="font-semibold text-gray-800">
-{{ $borrow->borrow_date ?? '-' }}
-</p>
-</div>
-
-<div class="bg-gradient-to-br from-purple-50 to-white p-4 rounded-xl border">
-<p class="text-gray-500">Return Date</p>
-<p class="font-semibold text-gray-800">
-{{ $borrow->return_date ?? '-' }}
-</p>
-</div>
-
-</div>
-
-
-{{-- ================================= --}}
-{{-- BORROW TIMELINE --}}
-{{-- ================================= --}}
-<div>
-
-<h3 class="font-semibold mb-4 text-gray-800">
-📅 Borrow Timeline
-</h3>
-
-<div class="space-y-4 text-sm">
-
-<div class="flex items-start gap-3">
-<div class="w-3 h-3 mt-1 rounded-full bg-yellow-400"></div>
-<p>
-Request submitted — 
-<span class="font-medium">
-{{ $borrow->created_at->format('d M Y') }}
-</span>
-</p>
-</div>
-
-@if($borrow->status == 'borrowed' || $borrow->status == 'returned')
-<div class="flex items-start gap-3">
-<div class="w-3 h-3 mt-1 rounded-full bg-blue-500"></div>
-<p class="font-medium">
-Book borrowed
-</p>
-</div>
-@endif
-
-@if($borrow->status == 'returned')
-<div class="flex items-start gap-3">
-<div class="w-3 h-3 mt-1 rounded-full bg-green-500"></div>
-<p>
-Book returned — 
-<span class="font-medium">
-{{ $borrow->return_date ?? '-' }}
-</span>
-</p>
-</div>
-@endif
-
-</div>
-
-</div>
-
-
-{{-- ================================= --}}
-{{-- ACTION BUTTON --}}
-{{-- ================================= --}}
-@if($borrow->status == 'requested' || $borrow->status == 'approved')
-
-<div class="border-t pt-6">
-
-<form id="cancelForm" action="{{ route('borrow.cancel',$borrow->id) }}" method="POST">
-@csrf
-@method('DELETE')
-
-<button type="button"
-onclick="cancelModal.open()"
-class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl shadow transition">
-❌ Cancel Request
-</button>
-
-</form>
-
-</div>
-
-@endif
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-{{-- ================================= --}}
-{{-- CANCEL MODAL (UPGRADE) --}}
-{{-- ================================= --}}
+{{-- MODAL --}}
 <div id="cancelModal"
-class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center z-[999]">
+     class="fixed inset-0 bg-gray-900/60 backdrop-blur-md hidden items-center justify-center z-[999] p-4">
 
-<div id="cancelContent"
-class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center
-transform scale-95 opacity-0 transition duration-300">
+    <div id="cancelContent"
+         class="bg-white rounded-3xl shadow-2xl p-6 sm:p-10 max-w-sm w-full text-center scale-95 opacity-0 transition duration-300">
 
-<div class="text-4xl mb-3">⚠️</div>
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl sm:text-3xl">
+            ⚠️
+        </div>
 
-<h2 class="text-xl font-semibold mb-2 text-gray-800">
-Cancel Borrow Request
-</h2>
+        <h2 class="text-xl sm:text-2xl font-black text-gray-800 mb-3">
+            {{ __('borrowed.action.cancel_title') }}
+        </h2>
 
-<p class="text-gray-500 mb-6">
-Are you sure you want to cancel this request?
-</p>
+        <p class="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 leading-relaxed">
+            {{ __('borrowed.action.cancel_confirm') }}
+        </p>
 
-<div class="flex justify-center gap-3">
+        <div class="space-y-3">
 
-<button onclick="cancelModal.submit()"
-class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl shadow">
-Yes, Cancel
-</button>
+            <button onclick="cancelModal.submit()"
+                    class="w-full bg-red-500 hover:bg-red-600 text-white py-3 sm:py-4 rounded-2xl font-bold shadow-xl shadow-red-200 transition">
+                {{ __('borrowed.action.yes_cancel') }}
+            </button>
 
-<button onclick="cancelModal.close()"
-class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded-xl">
-Keep Request
-</button>
+            <button onclick="cancelModal.close()"
+                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 py-3 sm:py-4 rounded-2xl font-bold transition">
+                {{ __('borrowed.action.keep_request') }}
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
-</div>
-
-</div>
 
 
 <script>
-
 const cancelModal = {
+    modal: document.getElementById('cancelModal'),
+    content: document.getElementById('cancelContent'),
 
-modal: document.getElementById('cancelModal'),
-content: document.getElementById('cancelContent'),
+    open(){
+        this.modal.classList.remove('hidden');
+        this.modal.classList.add('flex');
 
-open(){
-this.modal.classList.remove('hidden');
-this.modal.classList.add('flex');
+        setTimeout(() => {
+            this.content.classList.remove('scale-95','opacity-0');
+        }, 10);
+    },
 
-setTimeout(()=>{
-this.content.classList.remove('scale-95','opacity-0');
-this.content.classList.add('scale-100','opacity-100');
-},10);
-},
+    close(){
+        this.content.classList.add('scale-95','opacity-0');
 
-close(){
-this.content.classList.remove('scale-100','opacity-100');
-this.content.classList.add('scale-95','opacity-0');
+        setTimeout(() => {
+            this.modal.classList.add('hidden');
+            this.modal.classList.remove('flex');
+        }, 200);
+    },
 
-setTimeout(()=>{
-this.modal.classList.add('hidden');
-this.modal.classList.remove('flex');
-},200);
-},
-
-submit(){
-document.getElementById('cancelForm').submit();
-}
-
+    submit(){
+        document.getElementById('cancelForm').submit();
+    }
 };
 
-
-// klik luar modal
-cancelModal.modal.addEventListener('click', function(e){
-if(e.target === this){
-cancelModal.close();
+window.onclick = (e) => {
+    if(e.target === cancelModal.modal){
+        cancelModal.close();
+    }
 }
-});
-
 </script>
 
 @endsection

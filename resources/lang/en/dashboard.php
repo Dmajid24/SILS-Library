@@ -60,6 +60,11 @@ return [
         'rejected' => 'Rejected',
         'returned' => 'Returned',
     ],
+    'review' => [
+        'total' => 'Total Reviews',
+        'today' => 'Today\'s Reviews',
+        'low' => 'Low Ratings',
+    ],
     'alert_phone_title' => 'Complete Your Phone Number',
     'alert_phone_msg' => 'Add your phone number first to borrow books and receive library notifications.',
     'update_now' => 'Update Now',
@@ -83,5 +88,7 @@ return [
     'faq_a2' => 'You can borrow books for up to 7 days.',
     'faq_q3' => 'Can I reserve a book?',
     'faq_a3' => 'Yes, if the book is out of stock, you can reserve it.',
+    'Stay_tuned'=>'Stay tuned for upcoming updates',
+    'view_all'=>'View All'
 
 ];

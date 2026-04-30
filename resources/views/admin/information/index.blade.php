@@ -108,10 +108,6 @@
                 <p class="text-gray-500 mb-6 font-medium">
                     {{ __('announcements.no_announcements') }}
                 </p>
-                <a href="{{ route('information.create') }}"
-                   class="inline-block px-8 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition">
-                    {{ __('announcements.create_first') }}
-                </a>
             </div>
             @endforelse
         </div>

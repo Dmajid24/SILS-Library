@@ -3,7 +3,10 @@
 @section('content')
 
 <div class="max-w-5xl mx-auto space-y-8">
-
+    <a href="{{ route('admin.information.index')}}"
+            class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium transition">
+                ← {{ __('books.back_to_library') }}
+    </a>  
     {{-- ================= HERO IMAGE ================= --}}
     <div class="relative rounded-3xl overflow-hidden shadow-lg">
 

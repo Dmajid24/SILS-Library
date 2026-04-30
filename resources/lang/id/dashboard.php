@@ -60,6 +60,12 @@ return [
         'rejected' => 'Ditolak',
         'returned' => 'Dikembalikan',
     ],
+
+    'review' => [
+        'total' => 'Total Ulasan',
+        'today' => 'Ulasan Hari Ini',
+        'low' => 'Ulasan Buruk',
+    ],
     'alert_phone_title' => 'Lengkapi Nomor Telepon Anda',
     'alert_phone_msg' => 'Tambahkan nomor telepon Anda terlebih dahulu untuk meminjam buku dan menerima notifikasi perpustakaan.',
     'update_now' => 'Perbarui Sekarang',
@@ -83,5 +89,8 @@ return [
     'faq_a2' => 'Anda dapat meminjam buku hingga 7 hari.',
     'faq_q3' => 'Bisakah saya memesan buku?',
     'faq_a3' => 'Ya, jika stok buku habis, Anda dapat melakukan reservasi.',
+    'Stay_tuned' => 'Nantikan pembaruan selanjutnya.',
+    'view_all'=>'Lihat Semua'
+
 
 ];

@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\information;
 use App\Models\borrowings;
 use App\Models\School;
+use App\Models\Review;
+
 
 use Illuminate\Support\Facades\Auth;
 
@@ -50,6 +52,9 @@ class DashboardController extends Controller
                 ->groupBy('month')
                 ->orderBy('month')
                 ->pluck('total','month');
+            $reviewsCount = Review::count();
+            $todayReviews = Review::whereDate('created_at', today())->count();
+            $lowReviews = Review::where('rating','<=',2)->count();
 
             return view('admin.dashboard',compact(
                 'booksCount',
@@ -57,26 +62,13 @@ class DashboardController extends Controller
                 'pending',
                 'usersCount',
                 'monthlyBorrow',
-                'borrowings'
+                'borrowings',
+                'reviewsCount',
+                'todayReviews',
+                'lowReviews'
             ));
         }
 
-        elseif($user->role=== 'super_admin'){
-            if (auth()->user()->role !== 'super_admin') {
-                abort(403);
-            }
-
-        
-            $totalSchools = School::count();
-            $totalUsers = User::count();
-            $totalBooks = Book::count();
-            $schools = School::latest()->get();
-            // 'totalBorrowings' => Borrowing::count(),
-            // 'activeBorrowings' => Borrowing::where('status', 'borrowed')->count(),
-        
-
-            return view('superAdmin.dashboard',compact('totalSchools','totalUsers','totalBooks','schools'));
-        }
 
         
 
@@ -91,7 +83,10 @@ class DashboardController extends Controller
         ->get();
         $search = request('search');
 
-        $book = Book::where('school_id',$user->school_id)->when($search,function($q) use ($search){
+        $book = Book::where('school_id',$user->school_id)
+        ->withCount('reviews')                 // total review
+        ->withAvg('reviews', 'rating')        // avg rating
+        ->when($search,function($q) use ($search){
 
         $q->where('title','like',"%$search%")
         ->orWhere('author','like',"%$search%");

@@ -2,72 +2,78 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto space-y-10">
+<div class="w-full max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-0">
 
     {{-- ================= HEADER ================= --}}
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
         <div>
-            <h1 class="text-3xl font-bold text-gray-800">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 leading-tight">
                 🏫 {{ __('school.title') }}
             </h1>
 
-            <p class="text-gray-500">
+            <p class="text-sm sm:text-base text-gray-500 mt-1">
                 {{ __('school.subtitle') }}
             </p>
         </div>
+
     </div>
 
 
     {{-- ================= SUCCESS ================= --}}
     @if(session('success'))
-    <div class="bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-2xl shadow-sm">
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 sm:px-5 py-4 rounded-2xl shadow-sm text-sm sm:text-base">
         {{ session('success') }}
     </div>
     @endif
 
 
-    <div class="grid md:grid-cols-3 gap-8">
+    {{-- ================= CONTENT ================= --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
 
         {{-- ================= LEFT: PREVIEW ================= --}}
-        <div class="bg-gradient-to-br from-indigo-500 to-purple-600
-                    text-white rounded-3xl shadow-lg p-6 text-center relative overflow-hidden">
+        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-3xl shadow-lg p-6 text-center relative overflow-hidden h-fit">
 
             <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
 
             <div class="relative z-10">
-                <p class="text-sm text-white/70 mb-4">{{ __('school.live_preview') }}</p>
+
+                <p class="text-xs sm:text-sm text-white/70 mb-4">
+                    {{ __('school.live_preview') }}
+                </p>
 
                 @if($school->logo)
                 <img src="{{ asset('storage/'.$school->logo) }}"
-                     class="w-24 h-24 object-contain mx-auto mb-4 bg-white rounded-2xl p-2 shadow">
+                     class="w-20 h-20 sm:w-24 sm:h-24 object-contain mx-auto mb-4 bg-white rounded-2xl p-2 shadow">
                 @else
-                <div class="w-24 h-24 mx-auto mb-4 rounded-2xl
-                            bg-white/20 flex items-center justify-center text-white">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 rounded-2xl bg-white/20 flex items-center justify-center text-sm">
                     {{ __('school.no_logo') }}
                 </div>
                 @endif
 
-                <h2 class="font-semibold text-lg">
+                <h2 class="font-semibold text-base sm:text-lg break-words">
                     {{ $school->name ?? __('school.school_name') }}
                 </h2>
 
-                <p class="text-sm text-white/80 mt-1">
+                <p class="text-sm text-white/80 mt-1 break-all">
                     {{ $school->email ?? 'school@email.com' }}
                 </p>
 
                 <p class="text-xs text-white/60 mt-2">
                     {{ __('school.branding_preview') }}
                 </p>
+
             </div>
         </div>
 
 
         {{-- ================= RIGHT: FORM ================= --}}
         <div class="md:col-span-2">
+
             <form action="{{ route('admin.school.update') }}"
                   method="POST"
                   enctype="multipart/form-data"
-                  class="bg-white border rounded-3xl p-8 shadow-sm space-y-6">
+                  class="bg-white border rounded-3xl p-5 sm:p-6 lg:p-8 shadow-sm space-y-6">
 
                 @csrf
                 @method('PUT')
@@ -78,13 +84,10 @@
                         {{ __('school.school_name') }}
                     </label>
 
-                    <input type="text" name="name"
-                    value="{{ old('name',$school->name) }}"
-                    class="w-full mt-2 bg-gray-50 border border-gray-200
-                           rounded-xl px-4 py-3
-                           focus:ring-2 focus:ring-indigo-400
-                           focus:border-indigo-400
-                           transition outline-none">
+                    <input type="text"
+                           name="name"
+                           value="{{ old('name',$school->name) }}"
+                           class="w-full mt-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition outline-none">
                 </div>
 
 
@@ -95,46 +98,34 @@
                     </label>
 
                     <textarea name="address"
-                    rows="3"
-                    class="w-full mt-2 bg-gray-50 border border-gray-200
-                           rounded-xl px-4 py-3
-                           focus:ring-2 focus:ring-indigo-400
-                           focus:border-indigo-400
-                           transition outline-none">{{ old('address',$school->address) }}</textarea>
+                              rows="3"
+                              class="w-full mt-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition outline-none">{{ old('address',$school->address) }}</textarea>
                 </div>
 
 
-                {{-- GRID --}}
-                <div class="grid md:grid-cols-2 gap-4">
+                {{-- EMAIL + PHONE --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                    {{-- EMAIL --}}
                     <div>
                         <label class="text-sm text-gray-600 font-medium">
                             {{ __('school.email') }}
                         </label>
 
-                        <input type="email" name="email"
-                        value="{{ old('email',$school->email) }}"
-                        class="w-full mt-2 bg-gray-50 border border-gray-200
-                               rounded-xl px-4 py-3
-                               focus:ring-2 focus:ring-indigo-400
-                               focus:border-indigo-400
-                               transition outline-none">
+                        <input type="email"
+                               name="email"
+                               value="{{ old('email',$school->email) }}"
+                               class="w-full mt-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition outline-none">
                     </div>
 
-                    {{-- PHONE --}}
                     <div>
                         <label class="text-sm text-gray-600 font-medium">
                             {{ __('school.phone') }}
                         </label>
 
-                        <input type="text" name="phone"
-                        value="{{ old('phone',$school->phone) }}"
-                        class="w-full mt-2 bg-gray-50 border border-gray-200
-                               rounded-xl px-4 py-3
-                               focus:ring-2 focus:ring-indigo-400
-                               focus:border-indigo-400
-                               transition outline-none">
+                        <input type="text"
+                               name="phone"
+                               value="{{ old('phone',$school->phone) }}"
+                               class="w-full mt-2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition outline-none">
                     </div>
 
                 </div>
@@ -151,32 +142,29 @@
                          class="h-16 mt-3 mb-2 rounded-lg shadow">
                     @endif
 
-                    <input type="file" name="logo"
-                    class="w-full mt-2 bg-gray-50 border border-gray-200
-                           rounded-xl px-4 py-3
-                           focus:ring-2 focus:ring-indigo-400
-                           focus:border-indigo-400
-                           transition outline-none">
+                    <input type="file"
+                           name="logo"
+                           class="w-full mt-2 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition outline-none">
                 </div>
 
 
                 {{-- BUTTON --}}
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4">
 
-               
-                <div class="flex justify-end gap-3 pt-6">
-                    <a href="{{ url()->previous() }}" 
-                        class="px-6 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition font-semibold">
+                    <a href="{{ url()->previous() }}"
+                       class="w-full sm:w-auto text-center px-6 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition font-semibold">
                         {{ __('school.cancel') }}
                     </a>
+
                     <button type="submit"
-                    class="bg-gradient-to-r from-indigo-600 to-purple-600
-                           hover:opacity-90 text-white px-6 py-3
-                           rounded-xl font-semibold shadow-md transition">
+                            class="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition">
                         💾 {{ __('school.save_changes') }}
                     </button>
+
                 </div>
 
             </form>
+
         </div>
     </div>
 </div>

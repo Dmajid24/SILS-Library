@@ -12,21 +12,23 @@ class InformationController extends Controller
 {
    
     public function index()
-{
-    $user = Auth::user();
+        {
+            $user = Auth::user();
 
-    $yourInfo = Information::where('creator_id', $user->id)
-                    ->where('school_id', $user->school_id)
-                    ->latest()
-                    ->get();
+            $yourInfo = Information::where('creator_id', $user->id)
+                ->where('school_id', $user->school_id)
+                ->latest()
+                ->paginate(5, ['*'], 'your_page')
+                ->withQueryString();
 
-    $info = Information::where('school_id', $user->school_id)
+            $info = Information::where('school_id', $user->school_id)
                 ->where('creator_id', '!=', $user->id)
                 ->latest()
-                ->get();
+                ->paginate(5, ['*'], 'info_page')
+                ->withQueryString();
 
-    return view('admin.information.index', compact('info','yourInfo'));
-}
+            return view('admin.information.index', compact('info', 'yourInfo'));
+        }
     public function create(){
         if(Auth()->user()->role !== 'lecturer'&& Auth()->user()->role !== 'admin'){
             abort(403);
@@ -113,23 +115,36 @@ class InformationController extends Controller
             ->with('success','Information updated ✅');
     }
     public function destroy($id)
-    {
-        $information = Information::findOrFail($id);
-        $user = Auth::user();
-        if(($user->role !== 'lecturer' && $information->creator_id !== $user->id  ) && $user->role !== 'admin'    ){
-            abort(403);
-        }
+{
+    $information = Information::findOrFail($id);
+    $user = Auth::user();
 
-        if($information->image_content){
-            Storage::disk('public')
-                ->delete($information->image_content);
-        }
-
-        $information->delete();
-
-        
-             return redirect()->route('admin.information.index')
-            ->with('success','Information Deleted successfully 🎉');
-        
+    if (
+        ($user->role !== 'lecturer' && $information->creator_id !== $user->id)
+        && $user->role !== 'admin'
+    ) {
+        abort(403);
     }
+
+    if ($information->image_content) {
+        Storage::disk('public')->delete($information->image_content);
+    }
+
+    $information->delete();
+
+    $page = request()->get('page', 1);
+
+    $total = \App\Models\Information::count();
+    $perPage = 10; 
+
+    $lastPage = max(1, (int) ceil($total / $perPage));
+
+    if ($page > $lastPage) {
+        $page = $lastPage;
+    }
+
+    return redirect()->route('admin.information.index', [
+        'page' => $page
+    ])->with('success', 'Information Deleted successfully 🎉');
+}
 }

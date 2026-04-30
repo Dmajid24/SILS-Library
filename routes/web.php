@@ -91,8 +91,11 @@ Route::middleware(['auth'])
         Route::post('/users/store',[AdminController::class, 'storeUser'])
             ->name('users.store');
 
-        Route::post('/admin/users/import/preview',[AdminController::class,'importPreview'])
-        ->name('users.import.preview');
+        Route::post('/admin/users/import/process', [AdminController::class, 'importPreview'])->name('users.import.process');
+
+        Route::get('/admin/users/import/preview', [AdminController::class, 'showPreview'])->name('users.import.preview.show');
+
+        Route::post('/admin/users/import/confirm', [AdminController::class, 'importConfirm'])->name('users.import.confirm');
 
         Route::post('/admin/users/import/confirm',[AdminController::class,'importConfirm'])
         ->name('users.import.confirm');
@@ -120,11 +123,14 @@ Route::middleware(['auth'])
         Route::get('/information/create', [AdminController::class,'createInfo'])
             ->name('information.create');
 
-         Route::get('/school', [SchoolController::class,'edit'])
-        ->name('school.edit');
+        Route::get('/school', [SchoolController::class,'edit'])
+            ->name('school.edit');
 
         Route::put('/school', [SchoolController::class,'update'])
             ->name('school.update');
+
+        Route::delete('/admin/review/{id}', [ReviewController::class,'destroy'])
+            ->name('review.delete');
 
 });
 
@@ -153,6 +159,13 @@ Route::middleware(['auth'])
 */
 
 Route::middleware('auth')->group(function () {
+
+    /*
+    | FAQ
+    */
+    Route::get('/faq', function () {
+        return view('user.faq.index');
+    })->name('faq');
 
     /*
     | Profile

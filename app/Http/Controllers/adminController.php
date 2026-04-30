@@ -227,10 +227,23 @@ class adminController extends Controller
 
     public function destroyUser(User $user)
     {
-
         $user->delete();
 
-        return back()->with('success','User deleted');
+        $page = request()->get('page', 1);
+
+        $totalUsers = \App\Models\User::count();
+        $perPage = 10; // samakan dengan paginate() di indexUser
+
+        $lastPage = max(1, (int) ceil($totalUsers / $perPage));
+
+        if ($page > $lastPage) {
+            $page = $lastPage;
+        }
+
+        return redirect()->route('admin.users.index', [
+            'page'   => $page,
+            'search' => request('search')
+        ])->with('success', 'User deleted');
     }
 
     public function createInfo(){
@@ -282,7 +295,6 @@ public function importPreview(Request $request)
     ]);
 
     $role = $request->role;
-
     $expectedHeaders = [
         'student'  => ['nim','name','major','faculty'],
         'lecturer' => ['nip','name','degree','department'],
@@ -290,34 +302,25 @@ public function importPreview(Request $request)
     ];
 
     $file = fopen($request->file('file'), 'r');
-
     $headers = fgetcsv($file);
 
     if (!$headers) {
-        return back()->withErrors([
-            'file' => 'CSV file is empty.'
-        ]);
+        return back()->withErrors(['file' => 'CSV file is empty.']);
     }
 
     $headers = array_map(fn($h) => strtolower(trim($h)), $headers);
 
     if ($headers !== $expectedHeaders[$role]) {
-        return back()->withErrors([
-            'file' => 'CSV template does not match selected role.'
-        ]);
+        return back()->withErrors(['file' => 'CSV template does not match selected role.']);
     }
 
     $rows = [];
     $line = 2;
 
     while (($row = fgetcsv($file, 1000, ",")) !== false) {
-
-        if(count($row) < 4){
+        if(count($row) < 4) {
             $rows[] = [
-                'line' => $line,
-                'data' => $row,
-                'status' => 'Invalid Row',
-                'message' => 'Column count mismatch'
+                'line' => $line, 'data' => $row, 'status' => 'Invalid Row', 'message' => 'Column count mismatch'
             ];
             $line++;
             continue;
@@ -328,20 +331,8 @@ public function importPreview(Request $request)
         $field1   = trim($row[2]);
         $field2   = trim($row[3]);
 
-        if(empty($idNumber) || empty($name)){
-            $rows[] = [
-                'line' => $line,
-                'data' => $row,
-                'status' => 'Invalid Row',
-                'message' => 'Required column empty'
-            ];
-            $line++;
-            continue;
-        }
-
         $email = $idNumber . '@AL-IRSYAD.co.id';
-
-        $exists = User::where('email',$email)->exists();
+        $exists = User::where('email', $email)->exists();
 
         $rows[] = [
             'line' => $line,
@@ -354,18 +345,31 @@ public function importPreview(Request $request)
             'status' => $exists ? 'Duplicate' : 'Ready',
             'message' => $exists ? 'Already exists' : 'Ready to import'
         ];
-
         $line++;
     }
-
     fclose($file);
 
+    // SIMPAN KE SESSION
     session([
         'import_rows' => $rows,
         'import_role' => $role
     ]);
 
-    return view('admin.users.preview.preview', compact('rows','role'));
+    // REDIRECT KE GET ROUTE
+    return redirect()->route('admin.users.import.preview.show');
+}
+
+// FUNGSI BARU UNTUK MENAMPILKAN VIEW (GET METHOD)
+public function showPreview()
+{
+    $rows = session('import_rows');
+    $role = session('import_role');
+
+    if (!$rows) {
+        return redirect()->route('admin.users.index')->with('error', 'No preview data found. Please re-upload.');
+    }
+
+    return view('admin.users.preview.preview', compact('rows', 'role'));
 }
 public function importConfirm()
 {

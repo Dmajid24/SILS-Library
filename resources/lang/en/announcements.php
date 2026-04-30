@@ -42,10 +42,15 @@ return [
     'modal_update_title' => 'Update Information',
     'modal_update_msg' => 'Are you sure you want to update this information?',
     'modal_yes_update' => 'Yes, Update',
+    'modal_yes_create' => 'Yes, Create',
+    'modal_create_title' => 'Publish Announcement?',
+    'modal_create_msg'   => 'Make sure all information is correct before publishing.',
+    
     'published_on' => 'Published on',
     'edit' => 'Edit',
     'delete' => 'Delete',
     'delete_confirm_title' => 'Delete Information',
     'delete_confirm_msg' => 'This action cannot be undone. Are you sure?',
     'yes_delete' => 'Yes, Delete',
+    'upload_banner' => 'Upload Banner Image',
 ];

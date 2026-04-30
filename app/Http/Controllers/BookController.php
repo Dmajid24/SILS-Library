@@ -93,13 +93,27 @@ class BookController extends Controller
     }
 
     // DELETE
-    public function destroy(Book $book)
+   public function destroy(Book $book)
     {
         $this->authorizeBook($book);
 
         $book->delete();
 
-        return back()->with('success','Book Deleted');
+        $page = request()->get('page', 1);
+
+        $totalBooks = \App\Models\Book::count();
+        $perPage = 10; 
+
+        $lastPage = max(1, (int) ceil($totalBooks / $perPage));
+
+        if ($page > $lastPage) {
+            $page = $lastPage;
+        }
+
+        return redirect()->route('books.index', [
+            'page'   => $page,
+            'search' => request('search')
+        ])->with('success', 'Book Deleted');
     }
 
     private function authorizeBook(Book $book)
